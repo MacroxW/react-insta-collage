@@ -50,6 +50,9 @@ jobs:
         working-directory: example
         run: pnpm run build
 
+      - name: Disable Jekyll
+        run: touch example/dist/.nojekyll
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
