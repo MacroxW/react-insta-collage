@@ -25,11 +25,11 @@ const renderCustomStoryElement = (element: StoryElement) => {
 
 const API_STORIES_RESPONSE: UserStoryData[] = [
   {
-    username: 'camiquindi',
+    username: 'sofia_martinez',
     profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'camiquindi-beach-01',
+        id: 'sofia_martinez-beach-01',
         createdAt: createDate(540),
         background: {
           type: 'image',
@@ -73,7 +73,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         ],
       },
       {
-        id: 'camiquindi-video-02',
+        id: 'sofia_martinez-video-02',
         createdAt: createDate(480),
         background: {
           type: 'video',
@@ -98,7 +98,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         ],
       },
       {
-        id: 'camiquindi-lagoon-03',
+        id: 'sofia_martinez-lagoon-03',
         createdAt: createDate(420),
         background: {
           type: 'image',
@@ -107,7 +107,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'mention',
-            username: 'sormorfina',
+            username: 'martin_lopez',
             x: 0.32,
             y: 0.7,
           },
@@ -129,11 +129,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'sormorfina',
+    username: 'martin_lopez',
     profileImage: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'sormorfina-mountains-01',
+        id: 'martin_lopez-mountains-01',
         createdAt: createDate(360),
         background: {
           type: 'image',
@@ -158,11 +158,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'angie__ff',
+    username: 'carla_gomez',
     profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'angie-birthday-01',
+        id: 'carla_gomez-birthday-01',
         createdAt: createDate(330),
         background: {
           type: 'image',
@@ -188,11 +188,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'romipaluch',
+    username: 'pedro_ramirez',
     profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'romi-forest-01',
+        id: 'pedro_ramirez-forest-01',
         createdAt: createDate(45),
         background: {
           type: 'image',
@@ -216,11 +216,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'valenmanera27',
+    username: 'laura_torres',
     profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'valen-sunset-01',
+        id: 'laura_torres-sunset-01',
         createdAt: createDate(35),
         background: {
           type: 'image',
@@ -239,11 +239,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'lucas_travels',
+    username: 'diego_castillo',
     profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'lucas-stars-01',
+        id: 'diego_castillo-stars-01',
         createdAt: createDate(28),
         background: {
           type: 'image',

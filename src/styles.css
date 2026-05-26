@@ -23,6 +23,7 @@
 :root {
   --stories-card-shift-duration: 0.95s;
   --stories-card-shift-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --stories-nav-shift: calc(82vh * 9 / 16 + 5rem);
 }
 
 .story-card-far-left {
@@ -45,6 +46,14 @@
   view-transition-class: story-card-far-right;
 }
 
+.nav-button-left {
+  view-transition-class: nav-button-left;
+}
+
+.nav-button-right {
+  view-transition-class: nav-button-right;
+}
+
 /* Default cross-fade for old/new image replacements —
    keep it short for non-card elements. Story cards override this below. */
 ::view-transition-old(*),
@@ -63,7 +72,11 @@
 ::view-transition-old(*.story-card-near-right),
 ::view-transition-new(*.story-card-near-right),
 ::view-transition-old(*.story-card-far-right),
-::view-transition-new(*.story-card-far-right) {
+::view-transition-new(*.story-card-far-right),
+::view-transition-old(*.nav-button-left),
+::view-transition-new(*.nav-button-left),
+::view-transition-old(*.nav-button-right),
+::view-transition-new(*.nav-button-right) {
   animation-duration: var(--stories-card-shift-duration);
   animation-timing-function: var(--stories-card-shift-easing);
 }
@@ -192,6 +205,47 @@
   }
 }
 
+@keyframes nav-from-right-to-left-flip {
+  0% {
+    transform: translateX(var(--stories-nav-shift)) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes nav-from-left-to-right-flip {
+  0% {
+    transform: translateX(calc(var(--stories-nav-shift) * -1)) rotate(-180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes nav-button-press-zoom {
+  0% {
+    opacity: 0.62;
+    scale: 0.82;
+  }
+  55% {
+    opacity: 1;
+    scale: 1.12;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.nav-button-pressed {
+  animation: nav-button-press-zoom 380ms var(--stories-card-shift-easing) both;
+}
+
 .story-card-dom-exit-left {
   animation: story-card-dom-exit-left var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
@@ -228,6 +282,34 @@ html.stories-dir-prev::view-transition-new(*.story-card-far-right) {
   z-index: 1;
 }
 
+html.stories-dir-next::view-transition-old(*.nav-button-left),
+html.stories-dir-next::view-transition-old(*.nav-button-right),
+html.stories-dir-prev::view-transition-old(*.nav-button-left),
+html.stories-dir-prev::view-transition-old(*.nav-button-right) {
+  animation: none;
+  opacity: 0;
+}
+
+html.stories-dir-next::view-transition-new(*.nav-button-left) {
+  animation: nav-from-right-to-left-flip var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
+  z-index: 40;
+}
+
+html.stories-dir-next::view-transition-new(*.nav-button-right) {
+  animation: none;
+  opacity: 1;
+}
+
+html.stories-dir-prev::view-transition-new(*.nav-button-right) {
+  animation: nav-from-left-to-right-flip var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
+  z-index: 40;
+}
+
+html.stories-dir-prev::view-transition-new(*.nav-button-left) {
+  animation: none;
+  opacity: 1;
+}
+
 /* Near and center cards keep the default old/new snapshots so the same
    story morphs between slots instead of looking like the replacement card
    owns the exit animation. */
@@ -239,11 +321,15 @@ html.stories-dir-jump-next::view-transition-old(*.story-card-near-left),
 html.stories-dir-jump-next::view-transition-old(*.story-card-near-right),
 html.stories-dir-jump-next::view-transition-old(*.story-card-far-right),
 html.stories-dir-jump-next::view-transition-old(*.story-card-center),
+html.stories-dir-jump-next::view-transition-old(*.nav-button-left),
+html.stories-dir-jump-next::view-transition-old(*.nav-button-right),
 html.stories-dir-jump-prev::view-transition-old(*.story-card-far-left),
 html.stories-dir-jump-prev::view-transition-old(*.story-card-near-left),
 html.stories-dir-jump-prev::view-transition-old(*.story-card-near-right),
 html.stories-dir-jump-prev::view-transition-old(*.story-card-far-right),
-html.stories-dir-jump-prev::view-transition-old(*.story-card-center) {
+html.stories-dir-jump-prev::view-transition-old(*.story-card-center),
+html.stories-dir-jump-prev::view-transition-old(*.nav-button-left),
+html.stories-dir-jump-prev::view-transition-old(*.nav-button-right) {
   animation: none;
   opacity: 0;
 }
@@ -253,22 +339,30 @@ html.stories-dir-jump-next::view-transition-new(*.story-card-near-left),
 html.stories-dir-jump-next::view-transition-new(*.story-card-near-right),
 html.stories-dir-jump-next::view-transition-new(*.story-card-far-right),
 html.stories-dir-jump-next::view-transition-new(*.story-card-center),
+html.stories-dir-jump-next::view-transition-new(*.nav-button-left),
+html.stories-dir-jump-next::view-transition-new(*.nav-button-right),
 html.stories-dir-jump-prev::view-transition-new(*.story-card-far-left),
 html.stories-dir-jump-prev::view-transition-new(*.story-card-near-left),
 html.stories-dir-jump-prev::view-transition-new(*.story-card-near-right),
 html.stories-dir-jump-prev::view-transition-new(*.story-card-far-right),
-html.stories-dir-jump-prev::view-transition-new(*.story-card-center) {
+html.stories-dir-jump-prev::view-transition-new(*.story-card-center),
+html.stories-dir-jump-prev::view-transition-new(*.nav-button-left),
+html.stories-dir-jump-prev::view-transition-new(*.nav-button-right) {
   animation: none;
   opacity: 1;
 }
 
 html.stories-dir-jump-next::view-transition-new(*.story-card-near-right),
-html.stories-dir-jump-next::view-transition-new(*.story-card-far-right) {
+html.stories-dir-jump-next::view-transition-new(*.story-card-far-right),
+html.stories-dir-jump-next::view-transition-new(*.nav-button-left),
+html.stories-dir-jump-next::view-transition-new(*.nav-button-right) {
   animation: slide-in-from-viewport-right var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
 
 html.stories-dir-jump-prev::view-transition-new(*.story-card-far-left),
-html.stories-dir-jump-prev::view-transition-new(*.story-card-near-left) {
+html.stories-dir-jump-prev::view-transition-new(*.story-card-near-left),
+html.stories-dir-jump-prev::view-transition-new(*.nav-button-left),
+html.stories-dir-jump-prev::view-transition-new(*.nav-button-right) {
   animation: slide-in-from-viewport-left var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
 

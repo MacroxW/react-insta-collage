@@ -138,7 +138,11 @@ const renderStoryElement = (element: StoryElement, index: number, renderElement?
     default:
       if (renderElement) {
         return (
-          <div key={index} className="absolute pointer-events-auto" style={style}>
+          <div
+            key={index}
+            className="absolute pointer-events-auto transition-all duration-500 ease-out"
+            style={style}
+          >
             {renderElement(element, index)}
           </div>
         );

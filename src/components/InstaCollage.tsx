@@ -37,8 +37,18 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
   } | null>(null);
   const [exitingFarLeftStory, setExitingFarLeftStory] = useState<StoryData | null>(null);
   const [exitingFarRightStory, setExitingFarRightStory] = useState<StoryData | null>(null);
+  const [pressedNavButton, setPressedNavButton] = useState<'left' | 'right' | null>(null);
   const clearFarLeftTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const clearFarRightTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const clearPressedNavTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleNavPress = (direction: 'left' | 'right', callback: () => void) => {
+    if (clearPressedNavTimerRef.current) clearTimeout(clearPressedNavTimerRef.current);
+
+    setPressedNavButton(direction);
+    clearPressedNavTimerRef.current = setTimeout(() => setPressedNavButton(null), 420);
+    callback();
+  };
 
   useEffect(() => {
     const visibleUsernames = new Set(
@@ -73,6 +83,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
     return () => {
       if (clearFarLeftTimerRef.current) clearTimeout(clearFarLeftTimerRef.current);
       if (clearFarRightTimerRef.current) clearTimeout(clearFarRightTimerRef.current);
+      if (clearPressedNavTimerRef.current) clearTimeout(clearPressedNavTimerRef.current);
     };
   }, []);
 
@@ -80,22 +91,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
     <div className="w-full flex items-center justify-center select-none py-4">
 
       <div className="w-full flex items-center justify-center">
-        {/* Grid Container with buttons as columns */}
-        <div className={cn("grid auto-cols-max grid-flow-col grid-cols-0 md:grid-cols-[auto_calc(50vh*9/16)_calc(50vh*9/16)_calc(82vh*9/16)_calc(50vh*9/16)_calc(50vh*9/16)_auto] gap-4 lg:gap-8 w-full items-center justify-center px-4 md:px-0", className)}>
-
-          {/* Column 0: Navigation Arrow Left */}
-          <div className="hidden md:flex justify-center items-center h-[82vh]">
-            {onPrev && (
-              <button
-                onClick={onPrev}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white flex items-center justify-center border border-white/10 hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer"
-              >
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </button>
-            )}
-          </div>
+        <div className={cn("grid auto-cols-max grid-flow-col grid-cols-0 md:grid-cols-[calc(50vh*9/16)_calc(50vh*9/16)_calc(82vh*9/16)_calc(50vh*9/16)_calc(50vh*9/16)] gap-4 lg:gap-8 w-full items-center justify-center px-4 md:px-0", className)}>
 
           {/* Column 1: Far Left (Desktop only) */}
           <div
@@ -166,7 +162,25 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           </div>
 
           {/* Column 3: Center - Main Story */}
-          <div className="flex w-full justify-center items-center h-[82vh] md:h-[82vh]">
+          <div className="relative flex w-full justify-center items-center h-[82vh] md:h-[82vh]">
+            {onPrev && (
+              <button
+                onClick={() => handleNavPress('left', onPrev)}
+                style={{
+                  viewTransitionName: 'nav-button-left',
+                  viewTransitionClass: 'nav-button-left'
+                }}
+                className={cn(
+                  "nav-button-left absolute left-2 md:-left-7 lg:-left-8 top-1/2 z-30 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-neutral-900/80 text-white shadow-xl transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 md:h-[30px] md:w-[30px] cursor-pointer",
+                  pressedNavButton === 'left' && "nav-button-pressed"
+                )}
+                aria-label="Historia anterior"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+            )}
             <div
               className="story-card-center h-[80vh] md:h-[82vh] w-[calc(80vh*9/16)] md:w-[calc(82vh*9/16)] max-w-full"
               style={{
@@ -180,6 +194,24 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
                 renderElement={renderElement}
               />
             </div>
+            {onNext && (
+              <button
+                onClick={() => handleNavPress('right', onNext)}
+                style={{
+                  viewTransitionName: 'nav-button-right',
+                  viewTransitionClass: 'nav-button-right'
+                }}
+                className={cn(
+                  "nav-button-right absolute right-2 md:-right-7 lg:-right-8 top-1/2 z-30 flex h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-neutral-900/80 text-white shadow-xl transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 md:h-[30px] md:w-[30px] cursor-pointer",
+                  pressedNavButton === 'right' && "nav-button-pressed"
+                )}
+                aria-label="Historia siguiente"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            )}
           </div>
 
           {/* Column 4: Near Right (Desktop only) */}
@@ -247,24 +279,6 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
                   </div>
                 )}
               </div>
-            )}
-          </div>
-
-          {/* Column 6: Navigation Arrow Right */}
-          <div className="hidden md:flex justify-center items-center h-[82vh]">
-            {onNext && (
-              <button
-                onClick={onNext}
-                style={{
-                  viewTransitionName: 'nav-button-right',
-                  viewTransitionClass: 'nav-button'
-                }}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white flex items-center justify-center border border-white/10 hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer"
-              >
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
             )}
           </div>
         </div>
