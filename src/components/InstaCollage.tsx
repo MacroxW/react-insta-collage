@@ -34,14 +34,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
   return (
     <div className="w-full flex items-center justify-center select-none py-4">
 
-      {/* Animated container wrapper for the entire grid */}
-      <div
-        className="w-full flex items-center justify-center"
-        style={{
-          viewTransitionName: center.username ? getTransitionName(center.username) + '-container' : undefined,
-          viewTransitionClass: 'story-grid-container'
-        }}
-      >
+      <div className="w-full flex items-center justify-center">
         {/* Grid Container with buttons as columns */}
         <div className={cn("grid auto-cols-max grid-flow-col grid-cols-0 md:grid-cols-[auto_calc(50vh*9/16)_calc(50vh*9/16)_calc(82vh*9/16)_calc(50vh*9/16)_calc(50vh*9/16)_auto] gap-4 lg:gap-8 w-full items-center justify-center px-4 md:px-0", className)}>
 
@@ -88,7 +81,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
             style={{
               opacity: nearLeftStory ? 0.72 : 0,
               viewTransitionName: nearLeftStory ? getTransitionName(nearLeftStory.username) : undefined,
-              viewTransitionClass: 'story-card-edge'
+              viewTransitionClass: 'story-card-near-left'
             }}
           >
             {nearLeftStory && (
@@ -127,7 +120,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
             style={{
               opacity: nearRightStory ? 0.72 : 0,
               viewTransitionName: nearRightStory ? getTransitionName(nearRightStory.username) : undefined,
-              viewTransitionClass: 'story-card-edge'
+              viewTransitionClass: 'story-card-near-right'
             }}
           >
             {nearRightStory && (

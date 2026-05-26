@@ -157,23 +157,67 @@ html.stories-dir-prev::view-transition-new(*.story-card-far-right) {
 /* ─── Direction-aware entry/exit for outermost cards ─── */
 
 /* Going NEXT → new cards enter from right, old cards exit to left */
-html.stories-dir-next::view-transition-old(*.story-card-edge) {
+html.stories-dir-next::view-transition-old(*.story-card-near-left),
+html.stories-dir-next::view-transition-old(*.story-card-near-right) {
   animation: none;
   opacity: 0;
 }
-html.stories-dir-next::view-transition-new(*.story-card-edge) {
+html.stories-dir-next::view-transition-new(*.story-card-near-left),
+html.stories-dir-next::view-transition-new(*.story-card-near-right) {
   animation: none;
   opacity: 1;
 }
 
 /* Going PREV → new cards enter from left, old cards exit to right */
-html.stories-dir-prev::view-transition-old(*.story-card-edge) {
+html.stories-dir-prev::view-transition-old(*.story-card-near-left),
+html.stories-dir-prev::view-transition-old(*.story-card-near-right) {
   animation: none;
   opacity: 0;
 }
-html.stories-dir-prev::view-transition-new(*.story-card-edge) {
+html.stories-dir-prev::view-transition-new(*.story-card-near-left),
+html.stories-dir-prev::view-transition-new(*.story-card-near-right) {
   animation: none;
   opacity: 1;
+}
+
+/* Clicking far-left/far-right jumps two positions. In that case, keep the
+   geometry morph but hide old snapshots so they do not sit above replacements. */
+html.stories-dir-jump-next::view-transition-old(*.story-card-far-left),
+html.stories-dir-jump-next::view-transition-old(*.story-card-near-left),
+html.stories-dir-jump-next::view-transition-old(*.story-card-near-right),
+html.stories-dir-jump-next::view-transition-old(*.story-card-far-right),
+html.stories-dir-jump-next::view-transition-old(*.story-card-center),
+html.stories-dir-jump-prev::view-transition-old(*.story-card-far-left),
+html.stories-dir-jump-prev::view-transition-old(*.story-card-near-left),
+html.stories-dir-jump-prev::view-transition-old(*.story-card-near-right),
+html.stories-dir-jump-prev::view-transition-old(*.story-card-far-right),
+html.stories-dir-jump-prev::view-transition-old(*.story-card-center) {
+  animation: none;
+  opacity: 0;
+}
+
+html.stories-dir-jump-next::view-transition-new(*.story-card-far-left),
+html.stories-dir-jump-next::view-transition-new(*.story-card-near-left),
+html.stories-dir-jump-next::view-transition-new(*.story-card-near-right),
+html.stories-dir-jump-next::view-transition-new(*.story-card-far-right),
+html.stories-dir-jump-next::view-transition-new(*.story-card-center),
+html.stories-dir-jump-prev::view-transition-new(*.story-card-far-left),
+html.stories-dir-jump-prev::view-transition-new(*.story-card-near-left),
+html.stories-dir-jump-prev::view-transition-new(*.story-card-near-right),
+html.stories-dir-jump-prev::view-transition-new(*.story-card-far-right),
+html.stories-dir-jump-prev::view-transition-new(*.story-card-center) {
+  animation: none;
+  opacity: 1;
+}
+
+html.stories-dir-jump-next::view-transition-new(*.story-card-near-right),
+html.stories-dir-jump-next::view-transition-new(*.story-card-far-right) {
+  animation: slide-in-from-viewport-right 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+html.stories-dir-jump-prev::view-transition-new(*.story-card-far-left),
+html.stories-dir-jump-prev::view-transition-new(*.story-card-near-left) {
+  animation: slide-in-from-viewport-left 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* ─── Center Card Transitions ─── */
@@ -188,25 +232,6 @@ html.stories-dir-prev::view-transition-old(*.story-card-center) {
 
 html.stories-dir-next::view-transition-new(*.story-card-center),
 html.stories-dir-prev::view-transition-new(*.story-card-center) {
-  animation: none;
-  opacity: 1;
-}
-
-/* ─── Navigation Buttons ─── */
-
-::view-transition-group(*.story-grid-container) {
-  animation-duration: 0.95s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-html.stories-dir-next::view-transition-old(*.story-grid-container),
-html.stories-dir-prev::view-transition-old(*.story-grid-container) {
-  animation: none;
-  opacity: 0;
-}
-
-html.stories-dir-next::view-transition-new(*.story-grid-container),
-html.stories-dir-prev::view-transition-new(*.story-grid-container) {
   animation: none;
   opacity: 1;
 }

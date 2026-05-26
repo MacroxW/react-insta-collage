@@ -279,10 +279,10 @@ function App() {
   const demoRef = useRef<HTMLDivElement>(null);
 
   // ─── View Transitions ───────────────────────────────────
-  const triggerTransition = (direction: 'next' | 'prev', callback: () => void) => {
+  const triggerTransition = (direction: 'next' | 'prev' | 'jump-next' | 'jump-prev', callback: () => void) => {
     const update = () => {
       flushSync(() => {
-        document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next');
+        document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next', 'stories-dir-jump-prev', 'stories-dir-jump-next');
         document.documentElement.classList.add(`stories-dir-${direction}`);
         callback();
       });
@@ -290,7 +290,7 @@ function App() {
     if ('startViewTransition' in document) {
       const transition = (document as any).startViewTransition(update);
       transition.finished.then(() => {
-        document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next');
+        document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next', 'stories-dir-jump-prev', 'stories-dir-jump-next');
       });
     } else {
       update();
@@ -309,7 +309,7 @@ function App() {
   const handleCloseStories = () => {
     triggerTransition('next', () => {
       setIsOpen(false);
-      document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next');
+      document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next', 'stories-dir-jump-prev', 'stories-dir-jump-next');
     });
   };
 
@@ -370,7 +370,7 @@ function App() {
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
     const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
-    triggerTransition('prev', () => {
+    triggerTransition(idx === 0 && left.length === 2 ? 'jump-prev' : 'prev', () => {
       setCurrentUserIndex(targetUserIndex);
       setCurrentSlideIndex(savedSlideIndex);
     });
@@ -381,7 +381,7 @@ function App() {
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
     const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
-    triggerTransition('next', () => {
+    triggerTransition(idx === 1 ? 'jump-next' : 'next', () => {
       setCurrentUserIndex(targetUserIndex);
       setCurrentSlideIndex(savedSlideIndex);
     });
