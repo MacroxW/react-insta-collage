@@ -19,3 +19,49 @@ body {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes docShimmer {
+  0%, 100% {
+    opacity: 0.45;
+    transform: translateX(-12%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(12%);
+  }
+}
+
+@keyframes docFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.code-keyword {
+  color: #c084fc;
+}
+
+.code-string {
+  color: #86efac;
+}
+
+.code-comment {
+  color: #64748b;
+  font-style: italic;
+}
+
+.code-number {
+  color: #fbbf24;
+}
+
+.code-function {
+  color: #67e8f9;
+}
+
+.code-component,
+.code-tag {
+  color: #f472b6;
+}

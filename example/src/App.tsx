@@ -181,18 +181,218 @@ const POSTS = [
 // ─── Code Snippets for Documentation ─────────────────────
 const INSTALL_CODE = `npm install react-insta-collage`;
 
-const BASIC_USAGE = `import { InstaCollage } from 'react-insta-collage';
+const BASIC_USAGE = `import { useState } from 'react';
+import { InstaCollage } from 'react-insta-collage';
+
+const stories = [
+  {
+    username: 'camiquindi',
+    profileImage: '/avatars/cami.jpg',
+    slides: [
+      {
+        image: '/stories/playa.jpg',
+        time: '9h',
+        title: 'Dia de playa',
+        subtitle: 'Agradecida por este dia increible',
+      },
+    ],
+  },
+  {
+    username: 'sormorfina',
+    profileImage: '/avatars/sor.jpg',
+    slides: [
+      {
+        image: '/stories/montanas.jpg',
+        time: '6h',
+        title: 'Montanas infinitas',
+      },
+    ],
+  },
+  // ...
+];
 
 function App() {
+  const [currentUserIndex, setCurrentUserIndex] = useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  const toStoryCard = (user) => {
+    const slide = user.slides[0];
+    return {
+      image: slide.image,
+      username: user.username,
+      time: slide.time,
+      profileImage: user.profileImage,
+    };
+  };
+
+  const activeUser = stories[currentUserIndex];
+  const activeSlide = activeUser.slides[currentSlideIndex];
+
+  const left = stories
+    .slice(Math.max(0, currentUserIndex - 2), currentUserIndex)
+    .map(toStoryCard);
+
+  const right = stories
+    .slice(currentUserIndex + 1, currentUserIndex + 3)
+    .map(toStoryCard);
+
+  const center = {
+    image: activeSlide.image,
+    username: activeUser.username,
+    time: activeSlide.time,
+    profileImage: activeUser.profileImage,
+    title: activeSlide.title,
+    subtitle: activeSlide.subtitle,
+    activeSlideIndex: currentSlideIndex,
+    totalSlides: activeUser.slides.length,
+  };
+
+  const handleNext = () => {
+    if (currentSlideIndex < activeUser.slides.length - 1) {
+      setCurrentSlideIndex((index) => index + 1);
+      return;
+    }
+
+    if (currentUserIndex < stories.length - 1) {
+      setCurrentUserIndex((index) => index + 1);
+      setCurrentSlideIndex(0);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentSlideIndex > 0) {
+      setCurrentSlideIndex((index) => index - 1);
+      return;
+    }
+
+    if (currentUserIndex > 0) {
+      const previousUser = stories[currentUserIndex - 1];
+      setCurrentUserIndex((index) => index - 1);
+      setCurrentSlideIndex(previousUser.slides.length - 1);
+    }
+  };
+
   return (
     <InstaCollage
-      left={leftStories}
-      center={centerStory}
-      right={rightStories}
-      onPrev={handlePrev}
-      onNext={handleNext}
-      onSelectLeft={handleSelectLeft}
-      onSelectRight={handleSelectRight}
+      left={left}
+      center={center}
+      right={right}
+      onPrev={currentUserIndex > 0 || currentSlideIndex > 0 ? handlePrev : undefined}
+      onNext={currentUserIndex < stories.length - 1 ? handleNext : undefined}
+      onSelectLeft={(index) => {
+        const target = currentUserIndex - left.length + index;
+        setCurrentUserIndex(target);
+        setCurrentSlideIndex(0);
+      }}
+      onSelectRight={(index) => {
+        const target = currentUserIndex + index + 1;
+        setCurrentUserIndex(target);
+        setCurrentSlideIndex(0);
+      }}
+    />
+  );
+}`;
+
+const DYNAMIC_LOADING_USAGE = `import { useCallback, useEffect, useState } from 'react';
+import { InstaCollage } from 'react-insta-collage';
+
+async function fetchStoriesPage(cursor) {
+  const params = cursor ? \`?cursor=\${cursor}\` : '';
+  const response = await fetch(\`/api/stories\${params}\`);
+  if (!response.ok) throw new Error('Could not load stories');
+  return response.json();
+}
+
+function StoriesWithApi() {
+  const [stories, setStories] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentUserIndex, setCurrentUserIndex] = useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || cursor === false) return;
+
+    setIsLoadingMore(true);
+    const page = await fetchStoriesPage(cursor);
+
+    setStories((current) => [...current, ...page.items]);
+    setCursor(page.nextCursor ?? false);
+    setIsLoadingMore(false);
+  }, [cursor, isLoadingMore]);
+
+  useEffect(() => {
+    if (stories.length === 0) loadMore();
+  }, [stories.length, loadMore]);
+
+  useEffect(() => {
+    const remaining = stories.length - currentUserIndex - 1;
+    if (remaining <= 3) loadMore();
+  }, [currentUserIndex, stories.length, loadMore]);
+
+  if (stories.length === 0) return null;
+
+  const activeUser = stories[currentUserIndex];
+  const activeSlide = activeUser.slides[currentSlideIndex];
+
+  const toStoryCard = (user) => {
+    const slide = user.slides[0];
+    return {
+      image: slide.image,
+      username: user.username,
+      time: slide.time,
+      profileImage: user.profileImage,
+    };
+  };
+
+  const left = stories
+    .slice(Math.max(0, currentUserIndex - 2), currentUserIndex)
+    .map(toStoryCard);
+
+  const right = stories
+    .slice(currentUserIndex + 1, currentUserIndex + 3)
+    .map(toStoryCard);
+
+  const center = {
+    image: activeSlide.image,
+    username: activeUser.username,
+    time: activeSlide.time,
+    profileImage: activeUser.profileImage,
+    title: activeSlide.title,
+    subtitle: activeSlide.subtitle,
+    activeSlideIndex: currentSlideIndex,
+    totalSlides: activeUser.slides.length,
+  };
+
+  const hasNextUser = currentUserIndex < stories.length - 1;
+  const canRequestMore = cursor !== false || isLoadingMore;
+
+  const handleNext = () => {
+    if (currentSlideIndex < activeUser.slides.length - 1) {
+      setCurrentSlideIndex((index) => index + 1);
+      return;
+    }
+
+    if (hasNextUser) {
+      setCurrentUserIndex((index) => index + 1);
+      setCurrentSlideIndex(0);
+    }
+  };
+
+  return (
+    <InstaCollage
+      left={left}
+      center={center}
+      right={right}
+      onNext={hasNextUser || canRequestMore ? handleNext : undefined}
+      onSelectLeft={(index) => {
+        setCurrentUserIndex(currentUserIndex - left.length + index);
+        setCurrentSlideIndex(0);
+      }}
+      onSelectRight={(index) => {
+        setCurrentUserIndex(currentUserIndex + index + 1);
+        setCurrentSlideIndex(0);
+      }}
     />
   );
 }`;
@@ -231,17 +431,67 @@ const PROPS_TABLE = [
 ];
 
 // ─── CodeBlock Component ─────────────────────────────────
+const escapeHtml = (value: string) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const highlightCode = (code: string) => {
+  const mark = (value: string, className: string) => `<span class="${className}">${value}</span>`;
+  const highlightBase = (line: string) => {
+    const tokens: string[] = [];
+    const stash = (value: string, className: string) => {
+      tokens.push(mark(value, className));
+      return `\uE000${tokens.length - 1}\uE001`;
+    };
+
+    let html = escapeHtml(line)
+      .replace(/(`[^`]*`|&quot;[^&]*?&quot;|&#39;[^&]*?&#39;)/g, (value) => stash(value, 'code-string'))
+      .replace(/(&lt;\/?)([A-Z][A-Za-z0-9_.]*|[a-z][A-Za-z0-9-]*)(?=[\s/&]|&gt;)/g, (_, open, tag) => `${open}${stash(tag, 'code-tag')}`)
+      .replace(/\b(import|from|export|const|let|var|function|return|if|else|async|await|throw|new|true|false|null|undefined|interface|type|extends)\b/g, (value) => stash(value, 'code-keyword'))
+      .replace(/\b(useState|useEffect|useCallback|fetch|set[A-Z][A-Za-z0-9_]*)\b/g, (value) => stash(value, 'code-function'))
+      .replace(/\b([A-Z][A-Za-z0-9_]*)(?=\s*[({<])/g, (value) => stash(value, 'code-component'))
+      .replace(/\b(\d+)\b/g, (value) => stash(value, 'code-number'));
+
+    html = html.replace(/\uE000(\d+)\uE001/g, (_, index) => tokens[Number(index)]);
+    return html;
+  };
+
+  return code
+    .split('\n')
+    .map((line) => {
+      const commentIndex = line.indexOf('//');
+      if (commentIndex === -1) return highlightBase(line);
+
+      const codePart = line.slice(0, commentIndex);
+      const commentPart = line.slice(commentIndex);
+      return `${highlightBase(codePart)}${mark(escapeHtml(commentPart), 'code-comment')}`;
+    })
+    .join('\n');
+};
+
 const CodeBlock: React.FC<{ code: string; language?: string }> = ({ code, language = 'tsx' }) => {
   const [copied, setCopied] = useState(false);
+  const lines = code.split('\n');
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="relative group rounded-xl overflow-hidden border border-neutral-800/80 bg-[#0d1117]">
-      <div className="flex items-center justify-between px-4 py-2 bg-neutral-900/60 border-b border-neutral-800/60">
-        <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">{language}</span>
+    <div className="relative group rounded-xl overflow-hidden border border-neutral-800/80 bg-[#0d1117] shadow-2xl shadow-black/30">
+      <div className="flex items-center justify-between px-4 py-2 bg-neutral-900/80 border-b border-neutral-800/60">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="h-3 w-3 rounded-full bg-red-400/90" />
+            <span className="h-3 w-3 rounded-full bg-amber-300/90" />
+            <span className="h-3 w-3 rounded-full bg-emerald-400/90" />
+          </div>
+          <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">{language}</span>
+        </div>
         <button
           onClick={handleCopy}
           className="text-[11px] font-medium text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -259,9 +509,22 @@ const CodeBlock: React.FC<{ code: string; language?: string }> = ({ code, langua
           )}
         </button>
       </div>
-      <pre className="p-4 text-[13px] leading-relaxed overflow-x-auto text-neutral-300 font-mono no-scrollbar">
-        <code>{code}</code>
-      </pre>
+      <div className="relative overflow-x-auto no-scrollbar">
+        <div className="absolute inset-y-0 left-0 w-12 bg-[#0b0f16] border-r border-neutral-800/70" />
+        <pre className="relative p-4 pl-0 text-[13px] leading-relaxed text-neutral-300 font-mono min-w-max">
+          <code>
+            {lines.map((line, index) => (
+              <span key={index} className="block min-h-[1.625rem]">
+                <span className="inline-block w-12 pr-3 text-right text-neutral-600 select-none">{index + 1}</span>
+                <span
+                  className="inline-block pl-4"
+                  dangerouslySetInnerHTML={{ __html: highlightCode(line) || ' ' }}
+                />
+              </span>
+            ))}
+          </code>
+        </pre>
+      </div>
     </div>
   );
 };
@@ -499,7 +762,7 @@ function App() {
 
               <p className="text-lg text-neutral-400 max-w-xl mx-auto mb-10 leading-relaxed">
                 Componente de collage de historias estilo Instagram con transiciones fluidas,
-                navegación por teclado, lista finita y View Transitions API.
+                navegación por teclado, datos remotos y View Transitions API.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -528,13 +791,14 @@ function App() {
           <section className="max-w-5xl mx-auto px-6 pb-20">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { icon: '⚡', title: 'View Transitions', desc: 'Animaciones nativas con la View Transitions API del navegador.' },
-                { icon: '✓', title: 'Lista Finita', desc: 'Recorre una colección estable de historias sin reiniciar al final.' },
-                { icon: '📱', title: 'Responsive', desc: 'Layout de 5 columnas en desktop, 1 columna en mobile.' },
-                { icon: '🎨', title: 'Customizable', desc: 'Pasa tus propios datos, imágenes y callbacks de navegación.' },
+                { icon: '⚡', title: 'View Transitions', desc: 'Animaciones nativas con la View Transitions API del navegador.', accent: 'from-yellow-400 to-pink-500', text: 'text-yellow-300' },
+                { icon: '↻', title: 'Carga Dinámica', desc: 'Pedí más historias a tu API a medida que el usuario avanza.', accent: 'from-cyan-400 to-blue-500', text: 'text-cyan-300' },
+                { icon: '📱', title: 'Responsive', desc: 'Layout de 5 columnas en desktop, 1 columna en mobile.', accent: 'from-emerald-400 to-teal-500', text: 'text-emerald-300' },
+                { icon: '🎨', title: 'Customizable', desc: 'Pasa tus propios datos, imágenes y callbacks de navegación.', accent: 'from-fuchsia-400 to-purple-500', text: 'text-fuchsia-300' },
               ].map((f, i) => (
-                <div key={i} className="bg-neutral-900/40 border border-neutral-800/50 rounded-2xl p-5 hover:border-neutral-700/60 transition-colors group">
-                  <span className="text-2xl mb-3 block">{f.icon}</span>
+                <div key={i} className="relative overflow-hidden bg-neutral-900/40 border border-neutral-800/50 rounded-2xl p-5 hover:border-neutral-600/70 transition-all duration-300 group hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/30">
+                  <div className={`absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r ${f.accent} opacity-80`} />
+                  <span className={`text-2xl mb-3 block transition-transform duration-300 group-hover:scale-110 ${f.text}`}>{f.icon}</span>
                   <h3 className="font-semibold text-sm text-white mb-1.5">{f.title}</h3>
                   <p className="text-xs text-neutral-400 leading-relaxed">{f.desc}</p>
                 </div>
@@ -544,51 +808,92 @@ function App() {
 
           {/* Documentation Sections */}
           <section className="max-w-4xl mx-auto px-6 pb-20 space-y-16">
+            <div className="relative overflow-hidden rounded-2xl border border-neutral-800/70 bg-neutral-950/70 p-5">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-pink-500 via-cyan-400 to-emerald-400 animate-[docShimmer_3s_ease-in-out_infinite]" />
+              <div className="flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
+                <div className="md:w-48">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-300">Mapa mental</span>
+                  <h2 className="text-xl font-bold mt-1">Cómo se arma</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
+                  {[
+                    { step: '1', title: 'Estado', desc: 'Guardá usuario y slide activo.', color: 'border-pink-500/30 bg-pink-500/10 text-pink-300' },
+                    { step: '2', title: 'Ventana', desc: 'Derivá left, center y right.', color: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-300' },
+                    { step: '3', title: 'Carga', desc: 'Pedí más data cerca del final.', color: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' },
+                  ].map((item) => (
+                    <div key={item.step} className="group rounded-xl border border-neutral-800/70 bg-neutral-900/55 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-600">
+                      <span className={`inline-flex h-7 w-7 items-center justify-center rounded-lg border text-xs font-bold ${item.color}`}>
+                        {item.step}
+                      </span>
+                      <h3 className="mt-3 text-sm font-semibold text-white">{item.title}</h3>
+                      <p className="mt-1 text-xs leading-relaxed text-neutral-400">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {/* Quick Start */}
-            <div>
+            <div className="relative pl-0 md:pl-11">
+              <div className="hidden md:block absolute left-4 top-3 bottom-0 w-px bg-gradient-to-b from-emerald-400/70 via-emerald-400/10 to-transparent" />
               <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">1</span>
+                <span className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-300 text-sm font-bold shadow-lg shadow-emerald-500/10 animate-[docFloat_4s_ease-in-out_infinite]">1</span>
                 Instalación
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Instalá el paquete con npm, yarn o pnpm.</p>
-              <div className="ml-11">
+              <p className="text-neutral-400 text-sm mb-4 md:ml-11">Instalá el paquete con npm, yarn o pnpm.</p>
+              <div className="md:ml-11">
                 <CodeBlock code={INSTALL_CODE} language="bash" />
               </div>
             </div>
 
             {/* Usage */}
-            <div>
+            <div className="relative pl-0 md:pl-11">
+              <div className="hidden md:block absolute left-4 top-3 bottom-0 w-px bg-gradient-to-b from-blue-400/70 via-blue-400/10 to-transparent" />
               <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">2</span>
+                <span className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-300 text-sm font-bold shadow-lg shadow-blue-500/10 animate-[docFloat_4.3s_ease-in-out_infinite]">2</span>
                 Uso Básico
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Importá el componente y pasale las historias como props.</p>
-              <div className="ml-11">
+              <p className="text-neutral-400 text-sm mb-4 md:ml-11">Importá el componente, armá las columnas laterales desde tu índice activo y conectá los callbacks de navegación.</p>
+              <div className="md:ml-11">
                 <CodeBlock code={BASIC_USAGE} />
               </div>
             </div>
 
-            {/* Data Types */}
-            <div>
+            {/* Dynamic Loading */}
+            <div className="relative pl-0 md:pl-11">
+              <div className="hidden md:block absolute left-4 top-3 bottom-0 w-px bg-gradient-to-b from-cyan-400/70 via-cyan-400/10 to-transparent" />
               <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</span>
+                <span className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-300 text-sm font-bold shadow-lg shadow-cyan-500/10 animate-[docFloat_4.6s_ease-in-out_infinite]">3</span>
+                Carga Dinámica
+              </h2>
+              <p className="text-neutral-400 text-sm mb-4 md:ml-11">Pedí más historias a tu API cuando el usuario se acerca al final de la lista y agregalas al carrusel sin reiniciar el visor.</p>
+              <div className="md:ml-11">
+                <CodeBlock code={DYNAMIC_LOADING_USAGE} />
+              </div>
+            </div>
+
+            {/* Data Types */}
+            <div className="relative pl-0 md:pl-11">
+              <div className="hidden md:block absolute left-4 top-3 bottom-0 w-px bg-gradient-to-b from-purple-400/70 via-purple-400/10 to-transparent" />
+              <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-300 text-sm font-bold shadow-lg shadow-purple-500/10 animate-[docFloat_4.9s_ease-in-out_infinite]">4</span>
                 Tipos de Datos
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Las interfaces TypeScript que definen la estructura de datos.</p>
-              <div className="ml-11">
+              <p className="text-neutral-400 text-sm mb-4 md:ml-11">Las interfaces TypeScript que definen la estructura de datos.</p>
+              <div className="md:ml-11">
                 <CodeBlock code={DATA_EXAMPLE} language="typescript" />
               </div>
             </div>
 
             {/* Props Table */}
-            <div>
+            <div className="relative pl-0 md:pl-11">
+              <div className="hidden md:block absolute left-4 top-3 bottom-0 w-px bg-gradient-to-b from-amber-400/70 via-amber-400/10 to-transparent" />
               <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">4</span>
+                <span className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-300 text-sm font-bold shadow-lg shadow-amber-500/10 animate-[docFloat_5.2s_ease-in-out_infinite]">5</span>
                 API Reference
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Props del componente <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code></p>
-              <div className="ml-11 overflow-x-auto rounded-xl border border-neutral-800/80 bg-[#0d1117]">
+              <p className="text-neutral-400 text-sm mb-4 md:ml-11">Props del componente <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code></p>
+              <div className="md:ml-11 overflow-x-auto rounded-xl border border-neutral-800/80 bg-[#0d1117]">
                 <table className="w-full text-sm text-left">
                   <thead>
                     <tr className="border-b border-neutral-800/60">
