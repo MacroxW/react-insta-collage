@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MainStoryData, StoryElement } from '../types';
+import { MainStoryData, StoryElement, StoryElementRenderer } from '../types';
 import { isVideoMedia } from '../utils/media';
 
 interface MainStoryProps extends MainStoryData {
   isActive?: boolean;
   onNext?: () => void;
+  renderElement?: StoryElementRenderer;
 }
 
 const getElementPosition = (element: StoryElement): React.CSSProperties => ({
@@ -13,7 +14,7 @@ const getElementPosition = (element: StoryElement): React.CSSProperties => ({
   transform: `translate(-50%, -50%) rotate(${element.rotation ?? 0}deg)`,
 });
 
-const renderStoryElement = (element: StoryElement, index: number) => {
+const renderStoryElement = (element: StoryElement, index: number, renderElement?: StoryElementRenderer) => {
   const style = getElementPosition(element);
 
   switch (element.type) {
@@ -135,6 +136,14 @@ const renderStoryElement = (element: StoryElement, index: number) => {
       );
 
     default:
+      if (renderElement) {
+        return (
+          <div key={index} className="absolute pointer-events-auto" style={style}>
+            {renderElement(element, index)}
+          </div>
+        );
+      }
+
       return null;
   }
 };
@@ -145,6 +154,7 @@ export const MainStory: React.FC<MainStoryProps> = ({
   createdAt,
   profileImage,
   elements = [],
+  renderElement,
   isActive = true,
   onNext,
   activeSlideIndex = 0,
@@ -337,7 +347,7 @@ export const MainStory: React.FC<MainStoryProps> = ({
       </div>
 
       <div className="absolute inset-0 z-10 pointer-events-none">
-        {elements.map(renderStoryElement)}
+        {elements.map((element, index) => renderStoryElement(element, index, renderElement))}
       </div>
 
       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent p-4 pt-10 z-20 flex items-center gap-3">

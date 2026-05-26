@@ -1,5 +1,11 @@
 import { forwardRef, useEffect, useState } from 'react';
-import { InstaCollage, useInstaCollageStories, type UserStoryData } from '../../src';
+import {
+  InstaCollage,
+  useInstaCollageStories,
+  type StoryElement,
+  type UserStoryData,
+} from '../../src';
+import { isVotingElement, VotingSticker } from './VotingSticker';
 import video1 from './assets/video1.mp4';
 
 const STORY_VIEWER_BRAND = 'gallery';
@@ -7,6 +13,14 @@ const MAX_STORY_SLIDES = 10;
 
 const createDate = (minutesAgo: number) => {
   return new Date(Date.now() - minutesAgo * 60 * 1000).toISOString();
+};
+
+const renderCustomStoryElement = (element: StoryElement) => {
+  if (isVotingElement(element) && element.props) {
+    return <VotingSticker {...element.props} />;
+  }
+
+  return null;
 };
 
 const API_STORIES_RESPONSE: UserStoryData[] = [
@@ -41,6 +55,20 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
             options: ['Sí', 'Obvio'],
             x: 0.5,
             y: 0.76,
+          },
+          {
+            type: 'custom',
+            name: 'voting',
+            x: 0.5,
+            y: 0.6,
+            props: {
+              question: 'Plan de mañana',
+              options: [
+                { id: 'beach', label: 'Playa', votes: 124 },
+                { id: 'city', label: 'Ciudad', votes: 48 },
+              ],
+              selectedOptionId: 'beach',
+            },
           },
         ],
       },
@@ -345,7 +373,7 @@ const InstaCollageExample = forwardRef<HTMLElement>((_, ref) => {
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
           <div className="w-full max-w-[1400px]">
-            <InstaCollage {...stories.collageProps} />
+            <InstaCollage {...stories.collageProps} renderElement={renderCustomStoryElement} />
           </div>
         </div>
       )}

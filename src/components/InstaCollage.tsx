@@ -21,6 +21,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
   center,
   right,
   className,
+  renderElement,
   onPrev,
   onNext,
   onSelectLeft,
@@ -176,6 +177,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
               <MainStory
                 {...center}
                 onNext={onNext}
+                renderElement={renderElement}
               />
             </div>
           </div>

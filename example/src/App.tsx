@@ -5,26 +5,84 @@ import previewVideo from './assets/preview.mp4';
 
 const INSTALL_CODE = `pnpm add react-insta-collage`;
 
-const BASIC_USAGE = `import { InstaCollage } from 'react-insta-collage';
+const BASIC_USAGE = `import { InstaCollage, useInstaCollageStories, type UserStoryData } from 'react-insta-collage';
+
+const userStories: UserStoryData[] = [
+  {
+    username: 'camiquindi',
+    profileImage: 'https://example.com/avatar.jpg',
+    slides: [
+      {
+        id: 'story-1',
+        createdAt: '2026-05-26T14:20:00Z',
+        background: {
+          type: 'image',
+          url: 'https://example.com/background.jpg',
+        },
+        elements: [
+          {
+            type: 'text',
+            text: 'Hola Instagram',
+            x: 0.5,
+            y: 0.3,
+            style: { font: 'strong', size: 42, color: '#FFFFFF', align: 'center' },
+          },
+          { type: 'mention', username: 'usuario', x: 0.3, y: 0.7 },
+          { type: 'hashtag', tag: '#travel', x: 0.7, y: 0.7 },
+          {
+            type: 'custom',
+            name: 'voting',
+            x: 0.5,
+            y: 0.82,
+            props: {
+              question: '¿Qué hacemos mañana?',
+              options: [
+                { id: 'beach', label: 'Playa', votes: 124 },
+                { id: 'city', label: 'Ciudad', votes: 48 },
+              ],
+              selectedOptionId: 'beach',
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
 
 function App() {
+  const stories = useInstaCollageStories(userStories, {
+    initialUserIndex: 0,
+    maxSlides: 10,
+  });
+
   return (
-    <InstaCollage
-      left={leftStories}
-      center={centerStory}
-      right={rightStories}
-      onPrev={handlePrev}
-      onNext={handleNext}
-      onSelectLeft={handleSelectLeft}
-      onSelectRight={handleSelectRight}
-    />
+    <InstaCollage {...stories.collageProps} />
   );
+}`;
+
+const STORY_DATA_EXAMPLE = `interface UserStoryData {
+  username: string;
+  profileImage: string;
+  slides: StorySlideData[];
+  isLoading?: boolean;
+}
+
+interface StorySlideData {
+  id: string;
+  createdAt: string;
+  expiresAt?: string;
+  background: {
+    type: 'image' | 'video';
+    url: string;
+  };
+  elements?: StoryElement[];
 }`;
 
 const PROPS_TABLE = [
   { prop: 'left', type: 'StoryData[]', desc: 'Historias que aparecen a la izquierda del centro.' },
-  { prop: 'center', type: 'MainStoryData', desc: 'La historia activa con progreso, media y metadata.' },
+  { prop: 'center', type: 'MainStoryData', desc: 'La slide activa con background, elementos, progreso y metadata.' },
   { prop: 'right', type: 'StoryData[]', desc: 'Historias que aparecen a la derecha del centro.' },
+  { prop: 'renderElement', type: '(element) => ReactNode', desc: 'Render opcional para elementos custom como voting.' },
   { prop: 'onPrev', type: '() => void', desc: 'Controla el retroceso o esconde la flecha si no existe.' },
   { prop: 'onNext', type: '() => void', desc: 'Controla avance manual y avance automatico.' },
   { prop: 'onSelectLeft', type: '(index) => void', desc: 'Permite saltar a una historia lateral izquierda.' },
@@ -192,7 +250,7 @@ function App() {
               <h2>Instala, conecta y controla.</h2>
             </div>
             <p>
-              La API esta pensada para que puedas traer tus propios datos, manejar la navegacion y customizar el layout sin pelearte con el componente.
+              La API trabaja con slides reales: background, fecha de creacion y elementos posicionables como texto, menciones, links, encuestas y musica.
             </p>
           </div>
 
@@ -213,7 +271,7 @@ function App() {
                 <span className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">2</span>
                 Uso basico
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Pasale el centro, los laterales y callbacks de navegacion.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Trae tus stories desde una API, conectalas al hook y pasa las props al collage.</p>
               <div className="ml-11">
                 <CodeBlock code={BASIC_USAGE} />
               </div>
@@ -221,7 +279,18 @@ function App() {
 
             <div className="doc-panel doc-panel-wide reveal">
               <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">3</span>
+                <span className="w-8 h-8 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center text-fuchsia-300 text-sm font-bold">3</span>
+                Modelo de datos
+              </h2>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Cada slide representa una composicion completa con media de fondo y elementos renderizados encima.</p>
+              <div className="ml-11">
+                <CodeBlock code={STORY_DATA_EXAMPLE} />
+              </div>
+            </div>
+
+            <div className="doc-panel doc-panel-wide reveal">
+              <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">4</span>
                 API esencial
               </h2>
               <p className="text-neutral-400 text-sm mb-4 ml-11">Las props clave de <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code>, organizadas para leer rapido.</p>

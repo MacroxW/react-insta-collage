@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface StoryBackground {
   type: 'image' | 'video';
   url: string;
@@ -72,6 +74,12 @@ export interface StoryQuestionBoxElement extends StoryElementBase {
   question: string;
 }
 
+export interface StoryCustomElement<Props = unknown> extends StoryElementBase {
+  type: 'custom';
+  name: string;
+  props?: Props;
+}
+
 export type StoryElement =
   | StoryTextElement
   | StoryImageElement
@@ -82,7 +90,10 @@ export type StoryElement =
   | StoryMusicElement
   | StoryPollElement
   | StoryEmojiSliderElement
-  | StoryQuestionBoxElement;
+  | StoryQuestionBoxElement
+  | StoryCustomElement;
+
+export type StoryElementRenderer = (element: StoryElement, index: number) => ReactNode;
 
 export interface StorySlideData {
   id: string;
@@ -119,6 +130,7 @@ export interface InstaCollageProps {
   center: MainStoryData;
   right: StoryData[];
   className?: string;
+  renderElement?: StoryElementRenderer;
   onPrev?: () => void;
   onNext?: () => void;
   onSelectLeft?: (index: number) => void;
