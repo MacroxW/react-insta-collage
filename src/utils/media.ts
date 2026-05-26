@@ -1,6 +1,6 @@
-import type { MainStoryData, StoryData } from '../types';
+import type { StoryBackground } from '../types';
 
-type MediaType = StoryData['mediaType'] | MainStoryData['mediaType'];
+type MediaType = StoryBackground['type'];
 
 const VIDEO_EXTENSIONS = [
   'mp4',

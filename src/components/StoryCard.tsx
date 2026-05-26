@@ -7,14 +7,17 @@ interface StoryCardProps extends StoryData {
 }
 
 export const StoryCard: React.FC<StoryCardProps> = ({
-  image,
-  mediaType = 'image',
+  background,
   username,
-  time,
+  createdAt,
   profileImage,
   onClick,
 }) => {
-  const isVideo = isVideoMedia(image, mediaType);
+  const isVideo = isVideoMedia(background.url, background.type);
+  const createdDate = createdAt ? new Date(createdAt) : null;
+  const timeLabel = createdDate
+    ? createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : '';
 
   return (
     <div 
@@ -25,7 +28,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
       <div className="absolute inset-0 z-0">
         {isVideo ? (
           <video
-            src={image}
+            src={background.url}
             className="w-full h-full object-cover brightness-[0.45] transition-transform duration-500 group-hover:scale-105"
             autoPlay
             muted
@@ -35,7 +38,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
           />
         ) : (
           <img
-            src={image}
+            src={background.url}
             alt={username}
             className="w-full h-full object-cover brightness-[0.45] transition-transform duration-500 group-hover:scale-105"
           />
@@ -48,7 +51,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
         <div className="w-16 h-16 rounded-full p-[2.5px] bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 shadow-lg mb-3">
           <div className="w-full h-full rounded-full border-[3px] border-[#18181b] overflow-hidden bg-neutral-800">
             <img
-              src={profileImage || image}
+              src={profileImage || background.url}
               alt={username}
               className="w-full h-full object-cover"
             />
@@ -62,7 +65,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
         
         {/* Time */}
         <span className="text-[11px] text-white/70 font-medium mt-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-          {time}
+          {timeLabel}
         </span>
       </div>
     </div>

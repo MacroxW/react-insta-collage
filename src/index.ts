@@ -4,3 +4,4 @@ export * from './components/MainStory';
 export * from './components/LoadingCard';
 export * from './types';
 export * from './utils/media';
+export * from './hooks/useInstaCollageStories';
