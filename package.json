@@ -1,6 +1,6 @@
 {
   "name": "react-insta-collage",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A React library to create Instagram Story style collages.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
