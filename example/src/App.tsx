@@ -201,7 +201,7 @@ function App() {
                     </button>
                     <div className="flex items-center justify-center bg-black/45 border border-white/12 rounded-xl px-5 py-3 font-mono text-sm text-neutral-200 gap-3 backdrop-blur-xl">
                       <span className="text-pink-300">$</span>
-                      <span>pnpm install react-insta-collage</span>
+                      <span>pnpm add react-insta-collage</span>
                       <button
                         onClick={() => navigator.clipboard.writeText(INSTALL_CODE)}
                         className="text-neutral-400 hover:text-white transition-colors cursor-pointer ml-1"
