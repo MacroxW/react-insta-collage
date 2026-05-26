@@ -1,5 +1,6 @@
 import React from 'react';
 import { StoryData } from '../types';
+import { isVideoMedia } from '../utils/media';
 
 interface StoryCardProps extends StoryData {
   onClick?: () => void;
@@ -7,11 +8,14 @@ interface StoryCardProps extends StoryData {
 
 export const StoryCard: React.FC<StoryCardProps> = ({
   image,
+  mediaType = 'image',
   username,
   time,
   profileImage,
   onClick,
 }) => {
+  const isVideo = isVideoMedia(image, mediaType);
+
   return (
     <div 
       onClick={onClick}
@@ -19,11 +23,23 @@ export const StoryCard: React.FC<StoryCardProps> = ({
     >
       {/* Background Image - dimmed */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={image}
-          alt={username}
-          className="w-full h-full object-cover brightness-[0.45] transition-transform duration-500 group-hover:scale-105"
-        />
+        {isVideo ? (
+          <video
+            src={image}
+            className="w-full h-full object-cover brightness-[0.45] transition-transform duration-500 group-hover:scale-105"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+        ) : (
+          <img
+            src={image}
+            alt={username}
+            className="w-full h-full object-cover brightness-[0.45] transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
       </div>
 
       {/* Center Content */}

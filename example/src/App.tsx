@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { InstaCollage } from '../../src';
+import video1 from './assets/video1.mp4';
+import previewPoster from './assets/preview.png';
+import previewVideo from './assets/preview.mp4';
+
+const STORY_VIEWER_BRAND = 'gallery';
+const MAX_STORY_SLIDES = 10;
 
 // ─── Types ───────────────────────────────────────────────
 interface StorySlide {
   image: string;
+  mediaType?: 'image' | 'video';
   time: string;
   title?: string;
   subtitle?: string;
@@ -24,7 +31,17 @@ const USER_STORIES: UserStories[] = [
     username: "camiquindi",
     profileImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
     slides: [
-      { image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", time: "9h", title: "Día de playa 🌊", subtitle: "Agradecida por este día increíble..." }
+      { image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", time: "9h", title: "Beach day", subtitle: "Agradecida por este dia increible..." },
+      { image: video1, time: "8h", title: "Video story", subtitle: "Ahora tambien soporta video." },
+      { image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80", time: "7h", title: "Laguna", subtitle: "Primera parada." },
+      { image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80", time: "6h", title: "Camino", subtitle: "Luz perfecta." },
+      { image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80", time: "5h", title: "Mirador", subtitle: "Vista abierta." },
+      { image: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80", time: "4h", title: "Verde", subtitle: "Respirar un poco." },
+      { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80", time: "3h", title: "Casa", subtitle: "Tarde tranquila." },
+      { image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80", time: "2h", title: "Noche", subtitle: "Cielo limpio." },
+      { image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80", time: "1h", title: "Ruta", subtitle: "Sin apuro." },
+      { image: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80", time: "45m", title: "Hora dorada", subtitle: "Ultima luz." },
+      { image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80", time: "30m", title: "Extra", subtitle: "Esta slide queda fuera del limite de 10." }
     ]
   },
   {
@@ -169,17 +186,8 @@ const USER_STORIES: UserStories[] = [
   }
 ];
 
-const POSTS = [
-  "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1518173946687-a4c8a383392f?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1472214222541-d510753a4707?auto=format&fit=crop&w=600&q=80",
-];
-
 // ─── Code Snippets for Documentation ─────────────────────
-const INSTALL_CODE = `npm install react-insta-collage`;
+const INSTALL_CODE = `pnpm install react-insta-collage`;
 
 const BASIC_USAGE = `import { InstaCollage } from 'react-insta-collage';
 
@@ -200,6 +208,7 @@ function App() {
 const DATA_EXAMPLE = `// StoryData — used for side cards (left / right)
 interface StoryData {
   image: string;
+  mediaType?: 'image' | 'video';
   username: string;
   time: string;
   profileImage?: string;
@@ -209,6 +218,7 @@ interface StoryData {
 // MainStoryData — used for the center card
 interface MainStoryData {
   image: string;
+  mediaType?: 'image' | 'video';
   username?: string;
   time?: string;
   profileImage?: string;
@@ -220,14 +230,14 @@ interface MainStoryData {
 }`;
 
 const PROPS_TABLE = [
-  { prop: 'left', type: 'StoryData[]', desc: 'Array of 0-2 stories displayed to the left of the center card.' },
-  { prop: 'center', type: 'MainStoryData', desc: 'The active story displayed as the main, large card with progress bars and controls.' },
-  { prop: 'right', type: 'StoryData[]', desc: 'Array of 0-2 stories displayed to the right of the center card.' },
-  { prop: 'onPrev', type: '() => void', desc: 'Callback when navigating to the previous story. Hide the left arrow by passing undefined.' },
-  { prop: 'onNext', type: '() => void', desc: 'Callback when navigating to the next story or auto-advancing.' },
-  { prop: 'onSelectLeft', type: '(index) => void', desc: 'Callback when clicking a story card on the left side.' },
-  { prop: 'onSelectRight', type: '(index) => void', desc: 'Callback when clicking a story card on the right side.' },
-  { prop: 'className', type: 'string', desc: 'Optional CSS class name to pass to the container grid.' },
+  { prop: 'left', type: 'StoryData[]', desc: 'Historias que aparecen a la izquierda del centro.' },
+  { prop: 'center', type: 'MainStoryData', desc: 'La historia activa con progreso, media y metadata.' },
+  { prop: 'right', type: 'StoryData[]', desc: 'Historias que aparecen a la derecha del centro.' },
+  { prop: 'onPrev', type: '() => void', desc: 'Controla el retroceso o esconde la flecha si no existe.' },
+  { prop: 'onNext', type: '() => void', desc: 'Controla avance manual y avance automatico.' },
+  { prop: 'onSelectLeft', type: '(index) => void', desc: 'Permite saltar a una historia lateral izquierda.' },
+  { prop: 'onSelectRight', type: '(index) => void', desc: 'Permite saltar a una historia lateral derecha.' },
+  { prop: 'className', type: 'string', desc: 'Clase opcional para adaptar el contenedor.' },
 ];
 
 // ─── CodeBlock Component ─────────────────────────────────
@@ -270,7 +280,6 @@ const CodeBlock: React.FC<{ code: string; language?: string }> = ({ code, langua
 // Main App
 // ═══════════════════════════════════════════════════════════
 function App() {
-  const [page, setPage] = useState<'docs' | 'profile'>('docs');
   const [isOpen, setIsOpen] = useState(false);
   const [storiesList, setStoriesList] = useState<UserStories[]>(USER_STORIES);
   const [currentUserIndex, setCurrentUserIndex] = useState(2);
@@ -325,8 +334,9 @@ function App() {
   const handleNext = () => {
     const activeUser = storiesList[currentUserIndex];
     if (!activeUser || activeUser.isLoading) return;
+    const activeSlides = activeUser.slides.slice(0, MAX_STORY_SLIDES);
 
-    if (currentSlideIndex < activeUser.slides.length - 1) {
+    if (currentSlideIndex < activeSlides.length - 1) {
       // Avanza al siguiente slide y guarda
       const nextSlideIndex = currentSlideIndex + 1;
       setCurrentSlideIndex(nextSlideIndex);
@@ -334,7 +344,7 @@ function App() {
     } else if (currentUserIndex < storiesList.length - 1) {
       // Vamos a la siguiente historia
       const nextUser = storiesList[currentUserIndex + 1];
-      const savedSlideIndex = slideIndexMap[nextUser.username] ?? 0;
+      const savedSlideIndex = Math.min(slideIndexMap[nextUser.username] ?? 0, nextUser.slides.slice(0, MAX_STORY_SLIDES).length - 1);
       triggerTransition('next', () => {
         setCurrentUserIndex(prev => prev + 1);
         setCurrentSlideIndex(savedSlideIndex);
@@ -356,7 +366,8 @@ function App() {
       const prevUser = storiesList[prevUserIndex];
       if (prevUser && !prevUser.isLoading) {
         // Recupera el último slide guardado o usa el último disponible
-        const savedSlideIndex = slideIndexMap[prevUser.username] ?? prevUser.slides.length - 1;
+        const visiblePrevSlides = prevUser.slides.slice(0, MAX_STORY_SLIDES);
+        const savedSlideIndex = Math.min(slideIndexMap[prevUser.username] ?? visiblePrevSlides.length - 1, visiblePrevSlides.length - 1);
         triggerTransition('prev', () => {
           setCurrentUserIndex(prevUserIndex);
           setCurrentSlideIndex(savedSlideIndex);
@@ -369,7 +380,7 @@ function App() {
     const targetUserIndex = left.length === 2 ? currentUserIndex - (2 - idx) : currentUserIndex - 1;
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
-    const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
+    const savedSlideIndex = Math.min(slideIndexMap[targetUser.username] ?? 0, targetUser.slides.slice(0, MAX_STORY_SLIDES).length - 1);
     triggerTransition(idx === 0 && left.length === 2 ? 'jump-prev' : 'prev', () => {
       setCurrentUserIndex(targetUserIndex);
       setCurrentSlideIndex(savedSlideIndex);
@@ -380,7 +391,7 @@ function App() {
     const targetUserIndex = currentUserIndex + (idx + 1);
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
-    const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
+    const savedSlideIndex = Math.min(slideIndexMap[targetUser.username] ?? 0, targetUser.slides.slice(0, MAX_STORY_SLIDES).length - 1);
     triggerTransition(idx === 1 ? 'jump-next' : 'next', () => {
       setCurrentUserIndex(targetUserIndex);
       setCurrentSlideIndex(savedSlideIndex);
@@ -391,33 +402,39 @@ function App() {
   const left: any[] = [];
   if (currentUserIndex - 2 >= 0) {
     const u = storiesList[currentUserIndex - 2];
-    const slideIdx = slideIndexMap[u.username] ?? 0;
-    const slide = u.slides[slideIdx] || u.slides[0];
-    left.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const visibleSlides = u.slides.slice(0, MAX_STORY_SLIDES);
+    const slideIdx = Math.min(slideIndexMap[u.username] ?? 0, visibleSlides.length - 1);
+    const slide = visibleSlides[slideIdx] || visibleSlides[0];
+    left.push({ image: slide?.image || "", mediaType: slide?.mediaType, username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   if (currentUserIndex - 1 >= 0) {
     const u = storiesList[currentUserIndex - 1];
-    const slideIdx = slideIndexMap[u.username] ?? 0;
-    const slide = u.slides[slideIdx] || u.slides[0];
-    left.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const visibleSlides = u.slides.slice(0, MAX_STORY_SLIDES);
+    const slideIdx = Math.min(slideIndexMap[u.username] ?? 0, visibleSlides.length - 1);
+    const slide = visibleSlides[slideIdx] || visibleSlides[0];
+    left.push({ image: slide?.image || "", mediaType: slide?.mediaType, username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   const right: any[] = [];
   if (currentUserIndex + 1 < storiesList.length) {
     const u = storiesList[currentUserIndex + 1];
-    const slideIdx = slideIndexMap[u.username] ?? 0;
-    const slide = u.slides[slideIdx] || u.slides[0];
-    right.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const visibleSlides = u.slides.slice(0, MAX_STORY_SLIDES);
+    const slideIdx = Math.min(slideIndexMap[u.username] ?? 0, visibleSlides.length - 1);
+    const slide = visibleSlides[slideIdx] || visibleSlides[0];
+    right.push({ image: slide?.image || "", mediaType: slide?.mediaType, username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   if (currentUserIndex + 2 < storiesList.length) {
     const u = storiesList[currentUserIndex + 2];
-    const slideIdx = slideIndexMap[u.username] ?? 0;
-    const slide = u.slides[slideIdx] || u.slides[0];
-    right.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const visibleSlides = u.slides.slice(0, MAX_STORY_SLIDES);
+    const slideIdx = Math.min(slideIndexMap[u.username] ?? 0, visibleSlides.length - 1);
+    const slide = visibleSlides[slideIdx] || visibleSlides[0];
+    right.push({ image: slide?.image || "", mediaType: slide?.mediaType, username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   const centerUser = storiesList[currentUserIndex];
-  const activeSlide = centerUser?.slides?.[currentSlideIndex] || { image: "", time: "" };
+  const centerSlides = centerUser?.slides?.slice(0, MAX_STORY_SLIDES) || [];
+  const activeSlide = centerSlides[currentSlideIndex] || { image: "", time: "" };
   const center = {
     image: activeSlide.image,
+    mediaType: activeSlide.mediaType,
     username: centerUser?.username,
     time: activeSlide.time,
     profileImage: centerUser?.profileImage,
@@ -425,11 +442,11 @@ function App() {
     subtitle: activeSlide.subtitle,
     footer: activeSlide.footer,
     activeSlideIndex: currentSlideIndex,
-    totalSlides: centerUser?.slides?.length || 1,
+    totalSlides: centerSlides.length || 1,
   };
   const hasNext = Boolean(
     centerUser &&
-    (currentSlideIndex < centerUser.slides.length - 1 || currentUserIndex < storiesList.length - 1)
+    (currentSlideIndex < centerSlides.length - 1 || currentUserIndex < storiesList.length - 1)
   );
 
   // ═══════════════════════════════════════════════════════
@@ -452,18 +469,6 @@ function App() {
 
           {/* Nav Links */}
           <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage('docs')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${page === 'docs' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'}`}
-            >
-              Docs & Demo
-            </button>
-            <button
-              onClick={() => setPage('profile')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${page === 'profile' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'}`}
-            >
-              Profile Example
-            </button>
             <a
               href="https://github.com"
               target="_blank"
@@ -477,142 +482,160 @@ function App() {
       </nav>
 
       {/* ─── PAGE: DOCS & DEMO ─── */}
-      {page === 'docs' && (
-        <div className="animate-[fadeIn_0.3s_ease-out]">
+      <div className="animate-[fadeIn_0.3s_ease-out]">
 
           {/* Hero Section */}
           <section className="relative overflow-hidden">
-            {/* Ambient glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-pink-500/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute inset-x-0 top-0 h-[620px] bg-[radial-gradient(circle_at_50%_0%,rgba(236,72,153,0.22),transparent_34%),linear-gradient(180deg,rgba(147,51,234,0.12),transparent_70%)] pointer-events-none" />
 
-            <div className="relative max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
-              <div className="inline-flex items-center gap-2 bg-neutral-900/60 border border-neutral-800/60 rounded-full px-4 py-1.5 mb-8">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-medium text-neutral-300">Open Source · MIT Licensed</span>
-              </div>
+            <div className="relative max-w-6xl mx-auto px-6 pt-10 pb-16">
+              <div className="hero-stage relative overflow-hidden rounded-[28px] border border-white/10 bg-neutral-950 shadow-2xl shadow-black/50">
+                <video
+                  className="min-h-[560px] w-full object-cover opacity-70 sm:min-h-[620px]"
+                  src={previewVideo}
+                  poster={previewPoster}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,6,8,0.15),rgba(6,6,8,0.48)_42%,rgba(6,6,8,0.94)),radial-gradient(circle_at_50%_22%,transparent,rgba(6,6,8,0.72)_72%)]" />
 
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
-                <span className="bg-gradient-to-r from-white via-white to-neutral-400 bg-clip-text text-transparent">Instagram Stories</span>
-                <br />
-                <span className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent">for React</span>
-              </h1>
+                <div className="absolute inset-x-0 bottom-0 px-5 pb-6 sm:px-8 sm:pb-9 lg:px-12 lg:pb-12">
+                  <div className="mx-auto max-w-4xl text-center">
+                    <div className="hero-kicker mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-1.5 backdrop-blur-xl">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-xs font-medium text-neutral-200">Open Source - MIT Licensed</span>
+                    </div>
 
-              <p className="text-lg text-neutral-400 max-w-xl mx-auto mb-10 leading-relaxed">
-                Componente de collage de historias estilo Instagram con transiciones fluidas,
-                navegación por teclado, lista finita y View Transitions API.
-              </p>
+                    <h1 className="hero-title text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.02] mb-6">
+                      <span className="bg-gradient-to-r from-white via-white to-neutral-300 bg-clip-text text-transparent">Instagram Stories</span>
+                      <br />
+                      <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-fuchsia-300 bg-clip-text text-transparent">for React</span>
+                    </h1>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => demoRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-pink-500/20 hover:shadow-pink-500/30 cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                  Ver Demo en Vivo
-                </button>
-                <div className="flex items-center bg-neutral-900/80 border border-neutral-800 rounded-xl px-5 py-3 font-mono text-sm text-neutral-300 gap-3">
-                  <span className="text-pink-400">$</span>
-                  <span>npm install react-insta-collage</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(INSTALL_CODE)}
-                    className="text-neutral-500 hover:text-white transition-colors cursor-pointer ml-1"
-                  >
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  </button>
+                    <p className="hero-copy text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+                      Componente de collage de historias estilo Instagram con transiciones fluidas,
+                      navegacion por teclado y View Transitions API.
+                    </p>
+
+                    <div className="hero-actions flex flex-col sm:flex-row gap-3 justify-center">
+                      <button
+                        onClick={() => demoRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                        className="bg-white text-neutral-950 hover:bg-neutral-100 font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-white/10 cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2"
+                      >
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                        Ver Demo en Vivo
+                      </button>
+                      <div className="flex items-center justify-center bg-black/45 border border-white/12 rounded-xl px-5 py-3 font-mono text-sm text-neutral-200 gap-3 backdrop-blur-xl">
+                        <span className="text-pink-300">$</span>
+                        <span>pnpm install react-insta-collage</span>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(INSTALL_CODE)}
+                          className="text-neutral-400 hover:text-white transition-colors cursor-pointer ml-1"
+                          title="Copiar comando"
+                        >
+                          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+
             </div>
           </section>
 
-          {/* Features Grid */}
-          <section className="max-w-5xl mx-auto px-6 pb-20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Product Highlights */}
+          <section className="below-section reveal">
+            <div className="below-section-header">
+              <div>
+                <p>Pensado para stories reales</p>
+                <h2>Todo lo dificil ya viene resuelto</h2>
+              </div>
+              <p>
+                Un visor elegante, responsive y controlable desde tu estado de React, listo para imagenes, videos y transiciones fluidas.
+              </p>
+            </div>
+            <div className="feature-panel-grid">
               {[
-                { icon: '⚡', title: 'View Transitions', desc: 'Animaciones nativas con la View Transitions API del navegador.' },
-                { icon: '✓', title: 'Lista Finita', desc: 'Recorre una colección estable de historias sin reiniciar al final.' },
-                { icon: '📱', title: 'Responsive', desc: 'Layout de 5 columnas en desktop, 1 columna en mobile.' },
-                { icon: '🎨', title: 'Customizable', desc: 'Pasa tus propios datos, imágenes y callbacks de navegación.' },
+                { icon: '01', title: 'Movimiento nativo', desc: 'Usa View Transitions para que el cambio entre historias se sienta continuo y moderno.' },
+                { icon: '02', title: 'Video e imagen', desc: 'Detecta media mixto y mantiene la experiencia consistente entre formatos.' },
+                { icon: '03', title: 'Control total', desc: 'Vos decidis como avanzar, retroceder, saltar usuarios o cerrar el visor.' },
+                { icon: '04', title: 'Responsive', desc: 'Collage amplio en desktop y visor concentrado en pantallas chicas.' },
               ].map((f, i) => (
-                <div key={i} className="bg-neutral-900/40 border border-neutral-800/50 rounded-2xl p-5 hover:border-neutral-700/60 transition-colors group">
-                  <span className="text-2xl mb-3 block">{f.icon}</span>
-                  <h3 className="font-semibold text-sm text-white mb-1.5">{f.title}</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">{f.desc}</p>
+                <div key={i} className="feature-panel reveal-item">
+                  <span>{f.icon}</span>
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Documentation Sections */}
-          <section className="max-w-4xl mx-auto px-6 pb-20 space-y-16">
+          {/* Developer Experience */}
+          <section className="below-section docs-section">
+            <div className="below-section-header reveal">
+              <div>
+                <p>Developer experience</p>
+                <h2>Instala, conecta y controla.</h2>
+              </div>
+              <p>
+                La API esta pensada para que puedas traer tus propios datos, manejar la navegacion y customizar el layout sin pelearte con el componente.
+              </p>
+            </div>
+
+            <div className="docs-layout">
 
             {/* Quick Start */}
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
+            <div className="doc-panel reveal">
+              <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">1</span>
-                Instalación
+                Instalacion
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Instalá el paquete con npm, yarn o pnpm.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Instala el paquete y sumalo a tu app en segundos.</p>
               <div className="ml-11">
                 <CodeBlock code={INSTALL_CODE} language="bash" />
               </div>
             </div>
 
             {/* Usage */}
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
+            <div className="doc-panel reveal">
+              <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">2</span>
-                Uso Básico
+                Uso basico
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Importá el componente y pasale las historias como props.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Pasale el centro, los laterales y callbacks de navegacion.</p>
               <div className="ml-11">
                 <CodeBlock code={BASIC_USAGE} />
               </div>
             </div>
 
-            {/* Data Types */}
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">3</span>
-                Tipos de Datos
+            {/* Props Table */}
+            <div className="doc-panel doc-panel-wide reveal">
+              <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">3</span>
+                API esencial
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Las interfaces TypeScript que definen la estructura de datos.</p>
-              <div className="ml-11">
-                <CodeBlock code={DATA_EXAMPLE} language="typescript" />
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Las props clave de <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code>, organizadas para leer rapido.</p>
+              <div className="api-card-grid">
+                {PROPS_TABLE.map((row) => (
+                  <div key={row.prop} className="api-card">
+                    <div>
+                      <code>{row.prop}</code>
+                      <span>{row.type}</span>
+                    </div>
+                    <p>{row.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
-
-            {/* Props Table */}
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">4</span>
-                API Reference
-              </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Props del componente <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code></p>
-              <div className="ml-11 overflow-x-auto rounded-xl border border-neutral-800/80 bg-[#0d1117]">
-                <table className="w-full text-sm text-left">
-                  <thead>
-                    <tr className="border-b border-neutral-800/60">
-                      <th className="px-4 py-3 text-neutral-400 font-semibold text-xs uppercase tracking-wider">Prop</th>
-                      <th className="px-4 py-3 text-neutral-400 font-semibold text-xs uppercase tracking-wider">Type</th>
-                      <th className="px-4 py-3 text-neutral-400 font-semibold text-xs uppercase tracking-wider">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {PROPS_TABLE.map((row, i) => (
-                      <tr key={i} className="border-b border-neutral-800/30 last:border-b-0 hover:bg-neutral-800/20 transition-colors">
-                        <td className="px-4 py-3 font-mono text-pink-400 text-xs whitespace-nowrap">{row.prop}</td>
-                        <td className="px-4 py-3 font-mono text-amber-300/80 text-xs whitespace-nowrap">{row.type}</td>
-                        <td className="px-4 py-3 text-neutral-400 text-xs">{row.desc}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           </section>
 
           {/* ─── LIVE DEMO SECTION ─── */}
-          <section ref={demoRef} className="border-t border-neutral-800/50">
+          <section ref={demoRef} className="reveal border-t border-neutral-800/50">
             {/* Section ambient glow */}
             <div className="relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-purple-500/6 to-transparent rounded-full blur-3xl pointer-events-none" />
@@ -627,30 +650,8 @@ function App() {
               </div>
             </div>
 
-            {/* Stories Count */}
-            <div className="max-w-3xl mx-auto px-6 mb-8">
-              <div className="bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-neutral-800/60 p-6">
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/20 flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400">
-                        <path d="M8 6h13" /><path d="M8 12h13" /><path d="M8 18h13" /><path d="M3 6h.01" /><path d="M3 12h.01" /><path d="M3 18h.01" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-sm text-white">Historias disponibles</h3>
-                      <p className="text-[11px] text-neutral-500">Recorrido lineal, sin loop automático</p>
-                    </div>
-                  </div>
-                  <span className="text-pink-400 font-bold bg-pink-500/10 px-3 py-1 rounded-md text-sm">
-                    {USER_STORIES.length} usuarios
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Stories Tray */}
-            <div className="max-w-3xl mx-auto px-6 pb-20">
+            <div className="reveal max-w-3xl mx-auto px-6 pb-20">
               <div className="relative flex items-center justify-start gap-5 py-5 px-5 bg-neutral-900/30 rounded-2xl border border-neutral-800/40 overflow-x-auto no-scrollbar scroll-smooth">
                 {USER_STORIES.map((user, idx) => (
                   <div
@@ -672,117 +673,11 @@ function App() {
             </div>
           </section>
         </div>
-      )}
-
-      {/* ─── PAGE: PROFILE EXAMPLE ─── */}
-      {page === 'profile' && (
-        <div className="animate-[fadeIn_0.3s_ease-out]">
-          <div className="max-w-[935px] mx-auto px-4 py-8 md:py-12">
-
-            {/* Stories Tray */}
-            <div className="relative flex items-center justify-start gap-6 py-5 px-6 mb-8 bg-neutral-900/20 rounded-2xl border border-neutral-800/50 overflow-x-auto no-scrollbar scroll-smooth">
-              {USER_STORIES.map((user, idx) => (
-                <div
-                  key={user.username}
-                  onClick={() => handleOpenStories(idx)}
-                  className="flex flex-col items-center gap-2 cursor-pointer group flex-shrink-0"
-                >
-                  <div className="relative w-[72px] h-[72px] rounded-full p-[2.5px] bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 group-hover:scale-[1.04] active:scale-[0.98] transition-all duration-300">
-                    <div className="w-full h-full rounded-full border-2 border-black overflow-hidden bg-neutral-950">
-                      <img src={user.profileImage} alt={user.username} className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-                  <span className="text-[11px] font-medium text-neutral-300 group-hover:text-white transition-colors tracking-wide max-w-[80px] truncate text-center">
-                    {user.username}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Profile Header */}
-            <header className="flex flex-col sm:flex-row items-center gap-8 md:gap-16 border-b border-neutral-800 pb-10 md:pb-14">
-              <div onClick={() => handleOpenStories(2)} className="relative cursor-pointer group">
-                <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 animate-pulse blur-[1px] group-hover:scale-105 transition-transform duration-300" />
-                <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-black overflow-hidden bg-neutral-900 group-hover:scale-[1.02] transition-transform duration-300">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Profile" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-pink-600 to-purple-600 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest border border-black shadow-md select-none group-hover:scale-110 transition-transform">Stories</div>
-              </div>
-
-              <div className="flex-1 flex flex-col gap-5 text-center sm:text-left w-full sm:w-auto">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-center sm:justify-start">
-                  <h1 className="text-xl md:text-2xl font-light tracking-wide">angie__ff</h1>
-                  <div className="flex gap-2.5 justify-center">
-                    <button className="bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-sm px-4 py-1.5 rounded-lg transition-colors cursor-pointer active:scale-95">Editar perfil</button>
-                    <button
-                      onClick={() => handleOpenStories(2)}
-                      className="bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 hover:opacity-90 text-white font-semibold text-sm px-4 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-lg shadow-pink-500/15"
-                    >
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                      Ver Historias
-                    </button>
-                  </div>
-                </div>
-                <ul className="flex justify-center sm:justify-start gap-8 text-sm md:text-base border-t border-b border-neutral-900 py-3 sm:py-0 sm:border-none">
-                  <li><span className="font-semibold text-white">6</span> publicaciones</li>
-                  <li><span className="font-semibold text-white">12.5k</span> seguidores</li>
-                  <li><span className="font-semibold text-white">418</span> seguidos</li>
-                </ul>
-                <div className="text-sm leading-relaxed max-w-md">
-                  <h2 className="font-semibold text-neutral-100">Angie Fernandez</h2>
-                  <p className="text-neutral-400 font-light mt-1">🎬 Content Creator & Explorer</p>
-                  <p className="text-neutral-400 font-light">📍 Buenos Aires, Argentina</p>
-                  <a href="#" className="text-sky-400 hover:underline font-medium block mt-2 text-[13px]">linktr.ee/angie_ff</a>
-                </div>
-              </div>
-            </header>
-
-            {/* Posts Tabs */}
-            <div className="flex justify-center border-t border-neutral-800 gap-12 text-xs font-bold uppercase tracking-wider text-neutral-400 mt-2">
-              <button className="flex items-center gap-1.5 border-t border-white pt-4 text-white cursor-pointer pb-2">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-                Publicaciones
-              </button>
-              <button className="flex items-center gap-1.5 pt-4 hover:text-white transition-colors cursor-pointer pb-2">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>
-                Reels
-              </button>
-              <button className="flex items-center gap-1.5 pt-4 hover:text-white transition-colors cursor-pointer pb-2">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                Etiquetadas
-              </button>
-            </div>
-
-            {/* Posts Grid */}
-            <main className="grid grid-cols-3 gap-1 md:gap-7 mt-6">
-              {POSTS.map((url, i) => (
-                <div
-                  key={i}
-                  className="relative aspect-square bg-neutral-900 group overflow-hidden cursor-pointer"
-                  onClick={() => handleOpenStories(i % USER_STORIES.length)}
-                >
-                  <img src={url} alt={`Post ${i + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 z-10 text-white font-semibold">
-                    <span className="flex items-center gap-1.5 text-sm md:text-base">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-                      {340 + i * 27}
-                    </span>
-                    <span className="flex items-center gap-1.5 text-sm md:text-base">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z" /></svg>
-                      {28 + i * 4}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </main>
-          </div>
-        </div>
-      )}
 
       {/* ─── STORIES VIEWER MODAL ─── */}
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-[#0F0F0F] flex flex-col items-center justify-center p-4 overflow-hidden select-none animate-[fadeIn_0.2s_ease-out]">
-          <div className="absolute top-6 left-6 text-white font-bold text-2xl z-20 select-none tracking-wide" style={{ fontFamily: 'cursive' }}>Instagram</div>
+          <div className="absolute top-6 left-6 text-white font-bold text-2xl z-20 select-none tracking-wide" style={{ fontFamily: 'cursive' }}>{STORY_VIEWER_BRAND}</div>
           <button
             onClick={handleCloseStories}
             className="absolute top-6 right-6 text-white/70 hover:text-white cursor-pointer z-30 transition-transform hover:scale-105 active:scale-95 bg-neutral-900/40 p-2 rounded-full border border-white/5"

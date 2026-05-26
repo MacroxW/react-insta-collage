@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MainStoryData } from '../types';
+import { isVideoMedia } from '../utils/media';
 
 interface MainStoryProps extends MainStoryData {
   isActive?: boolean;
@@ -8,6 +9,7 @@ interface MainStoryProps extends MainStoryData {
 
 export const MainStory: React.FC<MainStoryProps> = ({
   image,
+  mediaType = 'image',
   username = 'instagram_user',
   time = '2h',
   profileImage,
@@ -21,6 +23,10 @@ export const MainStory: React.FC<MainStoryProps> = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [volume, setVolume] = useState(0.75);
+  const [isMuted, setIsMuted] = useState(true);
+  const isVideo = isVideoMedia(image, mediaType);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Auto-advance progress bar when active and not paused
   useEffect(() => {
@@ -49,6 +55,34 @@ export const MainStory: React.FC<MainStoryProps> = ({
   useEffect(() => {
     setProgress(0);
   }, [image]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.volume = volume;
+    video.muted = isMuted || volume === 0;
+  }, [isMuted, volume, image]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPaused || !isActive) {
+      video.pause();
+      return;
+    }
+
+    video.play().catch(() => {
+      setIsPaused(true);
+    });
+  }, [isActive, isPaused, image]);
+
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextVolume = Number(event.target.value);
+    setVolume(nextVolume);
+    setIsMuted(nextVolume === 0);
+  };
 
   return (
     <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#121212] group flex flex-col justify-between select-none">
@@ -98,6 +132,40 @@ export const MainStory: React.FC<MainStoryProps> = ({
 
           {/* Top Right Controls */}
           <div className="flex items-center gap-3">
+            {isVideo && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsMuted((current) => !current)}
+                  className="hover:scale-110 transition-transform active:scale-95 cursor-pointer text-white/90 hover:text-white"
+                  title={isMuted || volume === 0 ? "Unmute" : "Mute"}
+                >
+                  {isMuted || volume === 0 ? (
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <line x1="23" y1="9" x2="17" y2="15"></line>
+                      <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M19 5a9 9 0 0 1 0 14"></path>
+                      <path d="M15 9a4 4 0 0 1 0 6"></path>
+                    </svg>
+                  )}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="w-16 accent-white cursor-pointer"
+                  aria-label="Video volume"
+                />
+              </div>
+            )}
+
             {/* Play/Pause Button */}
             <button 
               onClick={() => setIsPaused(!isPaused)} 
@@ -127,13 +195,25 @@ export const MainStory: React.FC<MainStoryProps> = ({
         </div>
       </div>
 
-      {/* Main Background Image */}
+      {/* Main Background Media */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={image}
-          alt="Story Content"
-          className="w-full h-full object-cover"
-        />
+        {isVideo ? (
+          <video
+            ref={videoRef}
+            src={image}
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : (
+          <img
+            src={image}
+            alt="Story Content"
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
 
       {/* Overlays / Story Text */}
