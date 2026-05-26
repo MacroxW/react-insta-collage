@@ -261,6 +261,172 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
       },
     ],
   },
+  {
+    username: 'ana_perez',
+    profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
+    slides: [
+      {
+        id: 'ana_perez-coffee-01',
+        createdAt: createDate(120),
+        background: {
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80',
+        },
+        elements: [
+          {
+            type: 'text',
+            text: 'Mañana de café y lectura',
+            x: 0.5,
+            y: 0.3,
+            style: { font: 'regular', size: 30, color: '#FFFFFF', align: 'center' },
+          },
+          {
+            type: 'question_box',
+            question: '¿Café con leche o solo?',
+            x: 0.5,
+            y: 0.72,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    username: 'jose_mendoza',
+    profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80',
+    slides: [
+      {
+        id: 'jose_mendoza-city-01',
+        createdAt: createDate(60),
+        background: {
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=900&q=80',
+        },
+        elements: [
+          {
+            type: 'text',
+            text: 'Vistas de la ciudad',
+            x: 0.5,
+            y: 0.2,
+            style: { font: 'strong', size: 36, color: '#FFFFFF', align: 'center' },
+          },
+          {
+            type: 'location',
+            name: 'Buenos Aires',
+            x: 0.5,
+            y: 0.35,
+          },
+          {
+            type: 'hashtag',
+            tag: '#urban',
+            x: 0.5,
+            y: 0.8,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    username: 'lucia_fernandez',
+    profileImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80',
+    slides: [
+      {
+        id: 'lucia_fernandez-food-01',
+        createdAt: createDate(15),
+        background: {
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80',
+        },
+        elements: [
+          {
+            type: 'text',
+            text: 'Delicia absoluta',
+            x: 0.5,
+            y: 0.2,
+            style: { font: 'serif', size: 32, color: '#FFD700', align: 'center' },
+          },
+          {
+            type: 'poll',
+            question: '¿Comida salada o dulce?',
+            options: ['Salado', 'Dulce'],
+            x: 0.5,
+            y: 0.7,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    username: 'felipe_ortiz',
+    profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+    slides: [
+      {
+        id: 'felipe_ortiz-gym-01',
+        createdAt: createDate(5),
+        background: {
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1534258936925-c58bed479fcb?auto=format&fit=crop&w=900&q=80',
+        },
+        elements: [
+          {
+            type: 'text',
+            text: 'Entrenamiento completado 💪',
+            x: 0.5,
+            y: 0.15,
+            style: { font: 'strong', size: 34, color: '#FFFFFF', align: 'center' },
+          },
+          {
+            type: 'emoji_slider',
+            emoji: '🏋️',
+            question: '¿Qué tan intenso?',
+            x: 0.5,
+            y: 0.7,
+          },
+          {
+            type: 'hashtag',
+            tag: '#fitness',
+            x: 0.5,
+            y: 0.88,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    username: 'valentina_rios',
+    profileImage: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=150&q=80',
+    slides: [
+      {
+        id: 'valentina_rios-art-01',
+        createdAt: createDate(2),
+        background: {
+          type: 'image',
+          url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=80',
+        },
+        elements: [
+          {
+            type: 'text',
+            text: 'Nuevo mural en la ciudad',
+            x: 0.5,
+            y: 0.2,
+            style: { font: 'regular', size: 28, color: '#FFFFFF', align: 'center' },
+          },
+          {
+            type: 'location',
+            name: 'La Boca',
+            x: 0.5,
+            y: 0.35,
+          },
+          {
+            type: 'link',
+            url: 'https://serviweb.online',
+            label: 'Ver obra completa',
+            x: 0.5,
+            y: 0.78,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const fetchUserStories = async (): Promise<{ stories: UserStoryData[] }> => {
