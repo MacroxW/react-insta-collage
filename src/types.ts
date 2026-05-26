@@ -4,6 +4,7 @@ export interface StoryData {
   time: string;
   extraText?: string;
   profileImage?: string;
+  isLoading?: boolean;
 }
 
 export interface MainStoryData {

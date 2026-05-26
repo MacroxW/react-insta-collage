@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 import { InstaCollage } from '../../src';
 
 interface StorySlide {
@@ -13,6 +14,7 @@ interface UserStories {
   username: string;
   profileImage: string;
   slides: StorySlide[];
+  isLoading?: boolean;
 }
 
 const USER_STORIES: UserStories[] = [
@@ -114,121 +116,339 @@ const POSTS = [
   "https://images.unsplash.com/photo-1472214222541-d510753a4707?auto=format&fit=crop&w=600&q=80",
 ];
 
+// Mock data generator utilities for lazy loading
+const MOCK_NAMES = [
+  "lucas_travels", "sofia.art", "marcos_dev", "flor_fit", 
+  "mateo_foodie", "delfi_music", "javi.explores", "belu_design",
+  "santi.clicks", "coti_green", "gaston_run", "luli_style"
+];
+
+const MOCK_AVATARS = [
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+  "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+  "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+];
+
+const MOCK_STORY_IMAGES = [
+  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1472214222541-d510753a4707?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
+];
+
+const MOCK_TITLES = [
+  "Increíble atardecer 🌇", "Working hard 💻", "Naturaleza pura 🌿", 
+  "Cafecito mañanero ☕", "Road trip! 🚗", "Entrenamiento del día 💪",
+  "Weekend vibes ✨", "New project loading... 🚀"
+];
+
+const MOCK_SUBTITLES = [
+  "Agradecido por cada momento.", "Enfocado en lo que viene.", "Desconectando para conectar.",
+  "El mejor combustible.", "No importa el destino, sino el camino.", "Superando mis límites.",
+  "Disfrutando de las pequeñas cosas.", "Se vienen cositas lindas..."
+];
+
 function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const [storiesList, setStoriesList] = useState<UserStories[]>(USER_STORIES);
   const [currentUserIndex, setCurrentUserIndex] = useState(2); // Start with 'angie__ff' (index 2)
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [pendingAdvance, setPendingAdvance] = useState(false);
+
+  // Configuration settings for dynamic loading (customizable)
+  const [batchSize, setBatchSize] = useState(10);
+  const [triggerThreshold, setTriggerThreshold] = useState(3);
 
   const handleOpenStories = (userIndex = 2) => {
-    setCurrentUserIndex(userIndex);
-    setCurrentSlideIndex(0);
-    setIsOpen(true);
+    const update = () => {
+      flushSync(() => {
+        setStoriesList(USER_STORIES);
+        setCurrentUserIndex(userIndex);
+        setCurrentSlideIndex(0);
+        setIsLoadingMore(false);
+        setPendingAdvance(false);
+        setIsOpen(true);
+      });
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
+    }
   };
 
   const handleCloseStories = () => {
-    setIsOpen(false);
+    const update = () => {
+      flushSync(() => {
+        setIsOpen(false);
+      });
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
+    }
   };
 
+  const loadMoreStories = useCallback(() => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+
+    // Append loading placeholders to the end of storiesList
+    setStoriesList(prev => {
+      const placeholders = Array.from({ length: batchSize }).map((_, idx) => ({
+        username: `loading_${prev.length + idx + 1}`,
+        profileImage: "",
+        isLoading: true,
+        slides: []
+      }));
+      return [...prev, ...placeholders];
+    });
+
+    setTimeout(() => {
+      // Generate batchSize new users
+      const newUsers: UserStories[] = Array.from({ length: batchSize }).map((_, idx) => {
+        const randomName = MOCK_NAMES[Math.floor(Math.random() * MOCK_NAMES.length)] + `_${Math.floor(Math.random() * 100)}`;
+        const randomAvatar = MOCK_AVATARS[Math.floor(Math.random() * MOCK_AVATARS.length)];
+        
+        // Randomize slides (1 to 3 slides)
+        const slidesCount = Math.floor(Math.random() * 3) + 1;
+        const slides = Array.from({ length: slidesCount }).map((_, sIdx) => {
+          const randomImage = MOCK_STORY_IMAGES[Math.floor(Math.random() * MOCK_STORY_IMAGES.length)];
+          const randomTitle = MOCK_TITLES[Math.floor(Math.random() * MOCK_TITLES.length)];
+          const randomSubtitle = MOCK_SUBTITLES[Math.floor(Math.random() * MOCK_SUBTITLES.length)];
+          return {
+            image: randomImage,
+            time: `${sIdx + 1}h`,
+            title: randomTitle,
+            subtitle: randomSubtitle,
+          };
+        });
+
+        return {
+          username: randomName,
+          profileImage: randomAvatar,
+          slides,
+        };
+      });
+
+      const update = () => {
+        flushSync(() => {
+          setStoriesList(prev => {
+            // Remove placeholders and add new users
+            const filtered = prev.filter(u => !u.isLoading);
+            return [...filtered, ...newUsers];
+          });
+          setIsLoadingMore(false);
+        });
+      };
+
+      if ('startViewTransition' in document) {
+        (document as any).startViewTransition(update);
+      } else {
+        update();
+      }
+    }, 1500);
+  }, [batchSize, isLoadingMore]);
+
+  // Pre-fetching trigger
+  useEffect(() => {
+    if (isOpen && currentUserIndex >= storiesList.length - triggerThreshold && !isLoadingMore) {
+      loadMoreStories();
+    }
+  }, [isOpen, currentUserIndex, storiesList.length, isLoadingMore, triggerThreshold, loadMoreStories]);
+
+  // Handle pending transition when loading completes
+  useEffect(() => {
+    if (pendingAdvance && !isLoadingMore) {
+      const nextUser = storiesList[currentUserIndex + 1];
+      if (nextUser && !nextUser.isLoading) {
+        const update = () => {
+          flushSync(() => {
+            setCurrentUserIndex(prev => prev + 1);
+            setCurrentSlideIndex(0);
+            setPendingAdvance(false);
+          });
+        };
+        if ('startViewTransition' in document) {
+          (document as any).startViewTransition(update);
+        } else {
+          update();
+        }
+      }
+    }
+  }, [pendingAdvance, isLoadingMore, storiesList, currentUserIndex]);
+
   const handleNext = () => {
-    const activeUser = USER_STORIES[currentUserIndex];
+    const activeUser = storiesList[currentUserIndex];
+    if (!activeUser || activeUser.isLoading) return;
     
-    // Go to next slide of the current user if available
-    if (currentSlideIndex < activeUser.slides.length - 1) {
-      setCurrentSlideIndex(prev => prev + 1);
-    } 
-    // Go to first slide of the next user if available
-    else if (currentUserIndex < USER_STORIES.length - 1) {
-      setCurrentUserIndex(prev => prev + 1);
-      setCurrentSlideIndex(0);
-    } 
-    // Otherwise, close stories viewer
-    else {
-      handleCloseStories();
+    const update = () => {
+      flushSync(() => {
+        // Go to next slide of the current user if available
+        if (currentSlideIndex < activeUser.slides.length - 1) {
+          setCurrentSlideIndex(prev => prev + 1);
+        } 
+        // Go to first slide of the next user if available
+        else if (currentUserIndex < storiesList.length - 1) {
+          const nextUser = storiesList[currentUserIndex + 1];
+          if (nextUser.isLoading) {
+            setPendingAdvance(true);
+          } else {
+            setCurrentUserIndex(prev => prev + 1);
+            setCurrentSlideIndex(0);
+          }
+        } 
+        // Otherwise, close stories viewer
+        else {
+          setIsOpen(false);
+        }
+      });
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
     }
   };
 
   const handlePrev = () => {
-    // Go to previous slide of the current user if available
-    if (currentSlideIndex > 0) {
-      setCurrentSlideIndex(prev => prev - 1);
-    } 
-    // Go to last slide of the previous user if available
-    else if (currentUserIndex > 0) {
-      const prevUserIndex = currentUserIndex - 1;
-      const prevUserSlidesCount = USER_STORIES[prevUserIndex].slides.length;
-      setCurrentUserIndex(prevUserIndex);
-      setCurrentSlideIndex(prevUserSlidesCount - 1);
+    const update = () => {
+      flushSync(() => {
+        // Go to previous slide of the current user if available
+        if (currentSlideIndex > 0) {
+          setCurrentSlideIndex(prev => prev - 1);
+        } 
+        // Go to last slide of the previous user if available
+        else if (currentUserIndex > 0) {
+          const prevUserIndex = currentUserIndex - 1;
+          const prevUser = storiesList[prevUserIndex];
+          if (prevUser && !prevUser.isLoading) {
+            const prevUserSlidesCount = prevUser.slides.length;
+            setCurrentUserIndex(prevUserIndex);
+            setCurrentSlideIndex(prevUserSlidesCount - 1);
+          }
+        }
+      });
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
     }
-  };
-
-  // Dynamically calculate left and right stories relative to currentUserIndex
-  const left: any[] = [];
-  if (currentUserIndex - 2 >= 0) {
-    const u = USER_STORIES[currentUserIndex - 2];
-    left.push({
-      image: u.slides[0].image,
-      username: u.username,
-      time: u.slides[0].time,
-      profileImage: u.profileImage,
-    });
-  }
-  if (currentUserIndex - 1 >= 0) {
-    const u = USER_STORIES[currentUserIndex - 1];
-    left.push({
-      image: u.slides[0].image,
-      username: u.username,
-      time: u.slides[0].time,
-      profileImage: u.profileImage,
-    });
-  }
-
-  const right: any[] = [];
-  if (currentUserIndex + 1 < USER_STORIES.length) {
-    const u = USER_STORIES[currentUserIndex + 1];
-    right.push({
-      image: u.slides[0].image,
-      username: u.username,
-      time: u.slides[0].time,
-      profileImage: u.profileImage,
-    });
-  }
-  if (currentUserIndex + 2 < USER_STORIES.length) {
-    const u = USER_STORIES[currentUserIndex + 2];
-    right.push({
-      image: u.slides[0].image,
-      username: u.username,
-      time: u.slides[0].time,
-      profileImage: u.profileImage,
-    });
-  }
-
-  const centerUser = USER_STORIES[currentUserIndex];
-  const activeSlide = centerUser.slides[currentSlideIndex];
-
-  const center = {
-    image: activeSlide.image,
-    username: centerUser.username,
-    time: activeSlide.time,
-    profileImage: centerUser.profileImage,
-    title: activeSlide.title,
-    subtitle: activeSlide.subtitle,
-    footer: activeSlide.footer,
-    activeSlideIndex: currentSlideIndex,
-    totalSlides: centerUser.slides.length,
   };
 
   const handleSelectLeft = (idx: number) => {
     const targetUserIndex = left.length === 2 
       ? currentUserIndex - (2 - idx)
       : currentUserIndex - 1;
-    setCurrentUserIndex(targetUserIndex);
-    setCurrentSlideIndex(0);
+      
+    const targetUser = storiesList[targetUserIndex];
+    if (targetUser && targetUser.isLoading) return;
+
+    const update = () => {
+      flushSync(() => {
+        setCurrentUserIndex(targetUserIndex);
+        setCurrentSlideIndex(0);
+      });
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
+    }
   };
 
   const handleSelectRight = (idx: number) => {
     const targetUserIndex = currentUserIndex + (idx + 1);
-    setCurrentUserIndex(targetUserIndex);
-    setCurrentSlideIndex(0);
+    const targetUser = storiesList[targetUserIndex];
+    if (targetUser && targetUser.isLoading) return;
+    
+    const update = () => {
+      flushSync(() => {
+        setCurrentUserIndex(targetUserIndex);
+        setCurrentSlideIndex(0);
+      });
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
+    }
+  };
+
+  // Dynamically calculate left and right stories relative to currentUserIndex
+  const left: any[] = [];
+  if (currentUserIndex - 2 >= 0) {
+    const u = storiesList[currentUserIndex - 2];
+    left.push({
+      image: u.slides[0]?.image || "",
+      username: u.username,
+      time: u.slides[0]?.time || "",
+      profileImage: u.profileImage,
+      isLoading: u.isLoading,
+    });
+  }
+  if (currentUserIndex - 1 >= 0) {
+    const u = storiesList[currentUserIndex - 1];
+    left.push({
+      image: u.slides[0]?.image || "",
+      username: u.username,
+      time: u.slides[0]?.time || "",
+      profileImage: u.profileImage,
+      isLoading: u.isLoading,
+    });
+  }
+
+  const right: any[] = [];
+  if (currentUserIndex + 1 < storiesList.length) {
+    const u = storiesList[currentUserIndex + 1];
+    right.push({
+      image: u.slides[0]?.image || "",
+      username: u.username,
+      time: u.slides[0]?.time || "",
+      profileImage: u.profileImage,
+      isLoading: u.isLoading,
+    });
+  }
+  if (currentUserIndex + 2 < storiesList.length) {
+    const u = storiesList[currentUserIndex + 2];
+    right.push({
+      image: u.slides[0]?.image || "",
+      username: u.username,
+      time: u.slides[0]?.time || "",
+      profileImage: u.profileImage,
+      isLoading: u.isLoading,
+    });
+  }
+
+  const centerUser = storiesList[currentUserIndex];
+  const activeSlide = centerUser?.slides?.[currentSlideIndex] || { image: "", time: "" };
+
+  const center = {
+    image: activeSlide.image,
+    username: centerUser?.username,
+    time: activeSlide.time,
+    profileImage: centerUser?.profileImage,
+    title: activeSlide.title,
+    subtitle: activeSlide.subtitle,
+    footer: pendingAdvance ? "⏳ Cargando siguiente..." : activeSlide.footer,
+    activeSlideIndex: currentSlideIndex,
+    totalSlides: centerUser?.slides?.length || 1,
   };
 
   return (
@@ -236,6 +456,33 @@ function App() {
       
       {/* Profile Page Layout (Normal Page) */}
       <div className="max-w-[935px] mx-auto px-4 py-8 md:py-12">
+        
+        {/* Stories Horizontal Tray */}
+        <div className="relative flex items-center justify-start gap-6 py-5 px-6 mb-8 bg-neutral-900/20 rounded-2xl border border-neutral-800/50 overflow-x-auto no-scrollbar scroll-smooth">
+          {USER_STORIES.map((user, idx) => (
+            <div 
+              key={user.username}
+              onClick={() => handleOpenStories(idx)}
+              className="flex flex-col items-center gap-2 cursor-pointer group flex-shrink-0"
+            >
+              {/* Gradient avatar ring */}
+              <div className="relative w-[72px] h-[72px] rounded-full p-[2.5px] bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 group-hover:scale-[1.04] active:scale-[0.98] transition-all duration-300">
+                <div className="w-full h-full rounded-full border-2 border-black overflow-hidden bg-neutral-950">
+                  <img 
+                    src={user.profileImage} 
+                    alt={user.username} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              {/* Username text */}
+              <span className="text-[11px] font-medium text-neutral-300 group-hover:text-white transition-colors tracking-wide max-w-[80px] truncate text-center">
+                {user.username}
+              </span>
+            </div>
+          ))}
+        </div>
+
         {/* Profile Header */}
         <header className="flex flex-col sm:flex-row items-center gap-8 md:gap-16 border-b border-neutral-800 pb-10 md:pb-14">
           
@@ -297,6 +544,50 @@ function App() {
             </div>
           </div>
         </header>
+
+        {/* Settings Panel for Dynamic Loading */}
+        <div className="bg-neutral-900/40 backdrop-blur-md rounded-2xl border border-neutral-800/80 p-5 mt-6 mb-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+          <div className="flex flex-col gap-1.5 text-center md:text-left">
+            <h3 className="font-semibold text-neutral-200 flex items-center gap-1.5 justify-center md:justify-start">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              Configuración de Historias Infinitas
+            </h3>
+            <p className="text-xs text-neutral-400">Personaliza la paginación y pre-carga diferida (lazy loading)</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-6 items-center justify-center md:justify-end w-full md:w-auto">
+            <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+              <div className="flex justify-between items-center text-[11px] uppercase tracking-wider text-neutral-400 font-semibold gap-4">
+                <span>Tamaño de Lote (Batch):</span>
+                <span className="text-pink-500 font-bold bg-pink-500/10 px-1.5 py-0.5 rounded">{batchSize}</span>
+              </div>
+              <input 
+                type="range" 
+                min="1" 
+                max="15" 
+                value={batchSize} 
+                onChange={(e) => setBatchSize(Number(e.target.value))}
+                className="accent-pink-500 bg-neutral-800 rounded-lg appearance-none h-1.5 w-full sm:w-36 cursor-pointer"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5 w-full sm:w-auto">
+              <div className="flex justify-between items-center text-[11px] uppercase tracking-wider text-neutral-400 font-semibold gap-4">
+                <span>Cargar cuando falten (Threshold):</span>
+                <span className="text-pink-500 font-bold bg-pink-500/10 px-1.5 py-0.5 rounded">{triggerThreshold}</span>
+              </div>
+              <input 
+                type="range" 
+                min="1" 
+                max="5" 
+                value={triggerThreshold} 
+                onChange={(e) => setTriggerThreshold(Number(e.target.value))}
+                className="accent-pink-500 bg-neutral-800 rounded-lg appearance-none h-1.5 w-full sm:w-44 cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Posts Tabs */}
         <div className="flex justify-center border-t border-neutral-800 gap-12 text-xs font-bold uppercase tracking-wider text-neutral-400 mt-2">

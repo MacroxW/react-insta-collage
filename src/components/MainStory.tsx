@@ -51,7 +51,7 @@ export const MainStory: React.FC<MainStoryProps> = ({
   }, [image]);
 
   return (
-    <div className="relative flex-1 w-full max-w-[420px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#121212] group flex flex-col justify-between select-none">
+    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#121212] group flex flex-col justify-between select-none">
       
       {/* Top Header Overlay */}
       <div className="absolute top-0 inset-x-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent p-3 pt-4 pb-12 z-10 pointer-events-auto">
