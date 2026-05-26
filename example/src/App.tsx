@@ -202,6 +202,7 @@ function App() {
   const [storiesList, setStoriesList] = useState<UserStories[]>(USER_STORIES);
   const [currentUserIndex, setCurrentUserIndex] = useState(2);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [slideIndexMap, setSlideIndexMap] = useState<Record<string, number>>({}); // Guardar slide de cada historia
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [pendingAdvance, setPendingAdvance] = useState(false);
   const [batchSize, setBatchSize] = useState(10);
@@ -300,20 +301,34 @@ function App() {
     }
   }, [pendingAdvance, isLoadingMore, storiesList, currentUserIndex]);
 
+  // ─── Auto-save current slide to map ───────────────────
+  useEffect(() => {
+    const activeUser = storiesList[currentUserIndex];
+    if (activeUser && !activeUser.isLoading) {
+      setSlideIndexMap(prev => ({ ...prev, [activeUser.username]: currentSlideIndex }));
+    }
+  }, [currentSlideIndex, currentUserIndex, storiesList]);
+
   // ─── Navigation ─────────────────────────────────────────
   const handleNext = () => {
     const activeUser = storiesList[currentUserIndex];
     if (!activeUser || activeUser.isLoading) return;
+    
     if (currentSlideIndex < activeUser.slides.length - 1) {
-      setCurrentSlideIndex(prev => prev + 1);
+      // Avanza al siguiente slide y guarda
+      const nextSlideIndex = currentSlideIndex + 1;
+      setCurrentSlideIndex(nextSlideIndex);
+      setSlideIndexMap(prev => ({ ...prev, [activeUser.username]: nextSlideIndex }));
     } else if (currentUserIndex < storiesList.length - 1) {
+      // Vamos a la siguiente historia
       const nextUser = storiesList[currentUserIndex + 1];
       if (nextUser.isLoading) {
         setPendingAdvance(true);
       } else {
+        const savedSlideIndex = slideIndexMap[nextUser.username] ?? 0;
         triggerTransition('next', () => {
           setCurrentUserIndex(prev => prev + 1);
-          setCurrentSlideIndex(0);
+          setCurrentSlideIndex(savedSlideIndex);
         });
       }
     } else {
@@ -322,15 +337,23 @@ function App() {
   };
 
   const handlePrev = () => {
+    const activeUser = storiesList[currentUserIndex];
+    
     if (currentSlideIndex > 0) {
-      setCurrentSlideIndex(prev => prev - 1);
+      // Retrocede al anterior slide y guarda
+      const prevSlideIndex = currentSlideIndex - 1;
+      setCurrentSlideIndex(prevSlideIndex);
+      setSlideIndexMap(prev => ({ ...prev, [activeUser.username]: prevSlideIndex }));
     } else if (currentUserIndex > 0) {
+      // Vamos a la historia anterior
       const prevUserIndex = currentUserIndex - 1;
       const prevUser = storiesList[prevUserIndex];
       if (prevUser && !prevUser.isLoading) {
+        // Recupera el último slide guardado o usa el último disponible
+        const savedSlideIndex = slideIndexMap[prevUser.username] ?? prevUser.slides.length - 1;
         triggerTransition('prev', () => {
           setCurrentUserIndex(prevUserIndex);
-          setCurrentSlideIndex(prevUser.slides.length - 1);
+          setCurrentSlideIndex(savedSlideIndex);
         });
       }
     }
@@ -340,34 +363,50 @@ function App() {
     const targetUserIndex = left.length === 2 ? currentUserIndex - (2 - idx) : currentUserIndex - 1;
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
-    triggerTransition('prev', () => { setCurrentUserIndex(targetUserIndex); setCurrentSlideIndex(0); });
+    const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
+    triggerTransition('prev', () => { 
+      setCurrentUserIndex(targetUserIndex); 
+      setCurrentSlideIndex(savedSlideIndex); 
+    });
   };
 
   const handleSelectRight = (idx: number) => {
     const targetUserIndex = currentUserIndex + (idx + 1);
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
-    triggerTransition('next', () => { setCurrentUserIndex(targetUserIndex); setCurrentSlideIndex(0); });
+    const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
+    triggerTransition('next', () => { 
+      setCurrentUserIndex(targetUserIndex); 
+      setCurrentSlideIndex(savedSlideIndex); 
+    });
   };
 
   // ─── Derived Story Data ─────────────────────────────────
   const left: any[] = [];
   if (currentUserIndex - 2 >= 0) {
     const u = storiesList[currentUserIndex - 2];
-    left.push({ image: u.slides[0]?.image || "", username: u.username, time: u.slides[0]?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const slideIdx = slideIndexMap[u.username] ?? 0;
+    const slide = u.slides[slideIdx] || u.slides[0];
+    left.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   if (currentUserIndex - 1 >= 0) {
     const u = storiesList[currentUserIndex - 1];
-    left.push({ image: u.slides[0]?.image || "", username: u.username, time: u.slides[0]?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const slideIdx = slideIndexMap[u.username] ?? 0;
+    const slide = u.slides[slideIdx] || u.slides[0];
+    left.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   const right: any[] = [];
   if (currentUserIndex + 1 < storiesList.length) {
     const u = storiesList[currentUserIndex + 1];
-    right.push({ image: u.slides[0]?.image || "", username: u.username, time: u.slides[0]?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const slideIdx = slideIndexMap[u.username] ?? 0;
+    const slide = u.slides[slideIdx] || u.slides[0];
+    right.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   if (currentUserIndex + 2 < storiesList.length) {
     const u = storiesList[currentUserIndex + 2];
-    right.push({ image: u.slides[0]?.image || "", username: u.username, time: u.slides[0]?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
+    const slideIdx = slideIndexMap[u.username] ?? 0;
+    const slide = u.slides[slideIdx] || u.slides[0];
+    right.push({ image: slide?.image || "", username: u.username, time: slide?.time || "", profileImage: u.profileImage, isLoading: u.isLoading });
   }
   const centerUser = storiesList[currentUserIndex];
   const activeSlide = centerUser?.slides?.[currentSlideIndex] || { image: "", time: "" };
