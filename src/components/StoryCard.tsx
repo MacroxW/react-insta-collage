@@ -15,7 +15,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
   return (
     <div 
       onClick={onClick}
-      className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-neutral-900 w-full h-full cursor-pointer transition-all duration-350 hover:scale-[1.03] hover:border-white/20 select-none"
+      className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-neutral-900 w-full h-full cursor-pointer transition-all duration-500 cubic-bezier(0.22, 1, 0.36, 1) hover:scale-[1.04] hover:border-white/25 active:scale-[0.98] select-none"
     >
       {/* Background Image - dimmed */}
       <div className="absolute inset-0 z-0">

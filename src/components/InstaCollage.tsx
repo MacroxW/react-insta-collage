@@ -33,10 +33,10 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
 
   return (
     <div className="relative w-full flex items-center justify-center select-none py-4">
-      
+
       {/* Navigation Arrow Left */}
       {onPrev && (
-        <button 
+        <button
           onClick={onPrev}
           className="absolute left-4 md:left-[calc(50%-calc(82vh*9/32)-36px)] z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white flex items-center justify-center border border-white/10 hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer transform -translate-y-1/2 md:-translate-x-1/2 top-1/2"
         >
@@ -47,15 +47,15 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
       )}
 
       {/* Grid Container (5 Horizontal Columns on Desktop) */}
-      <div className={cn("grid grid-cols-1 md:grid-cols-[calc(50vh*9/16)_calc(50vh*9/16)_calc(82vh*9/16)_calc(50vh*9/16)_calc(50vh*9/16)] gap-4 lg:gap-8 w-full items-center justify-center px-4 md:px-0", className)}>
-        
+      <div className={cn("grid auto-cols-max grid-flow-col grid-cols-0 md:grid-cols-[calc(50vh*9/16)_calc(50vh*9/16)_calc(82vh*9/16)_calc(50vh*9/16)_calc(50vh*9/16)] gap-4 lg:gap-8 w-full items-center justify-center px-4 md:px-0", className)}>
+
         {/* Column 1: Far Left (Desktop only) */}
-        <div 
-          className="hidden md:flex justify-end items-center h-[50vh] transition-all duration-300"
-          style={{ 
+        <div
+          className="hidden md:flex justify-end items-center h-[50vh]"
+          style={{
             opacity: farLeftStory ? 0.38 : 0,
-            ['view-transition-name' as any]: farLeftStory ? getTransitionName(farLeftStory.username) : undefined,
-            ['view-transition-class' as any]: 'story-card-far'
+            viewTransitionName: farLeftStory ? getTransitionName(farLeftStory.username) : undefined,
+            viewTransitionClass: 'story-card-edge'
           }}
         >
           {farLeftStory && (
@@ -63,8 +63,8 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
               {farLeftStory.isLoading ? (
                 <LoadingCard />
               ) : (
-                <StoryCard 
-                  {...farLeftStory} 
+                <StoryCard
+                  {...farLeftStory}
                   onClick={() => onSelectLeft && onSelectLeft(0)}
                 />
               )}
@@ -73,11 +73,12 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
         </div>
 
         {/* Column 2: Near Left (Desktop only) */}
-        <div 
-          className="hidden md:flex justify-end items-center h-[50vh] transition-all duration-300"
-          style={{ 
+        <div
+          className="hidden md:flex justify-end items-center h-[50vh]"
+          style={{
             opacity: nearLeftStory ? 0.72 : 0,
-            ['view-transition-name' as any]: nearLeftStory ? getTransitionName(nearLeftStory.username) : undefined
+            viewTransitionName: nearLeftStory ? getTransitionName(nearLeftStory.username) : undefined,
+            viewTransitionClass: 'story-card-edge'
           }}
         >
           {nearLeftStory && (
@@ -85,8 +86,8 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
               {nearLeftStory.isLoading ? (
                 <LoadingCard />
               ) : (
-                <StoryCard 
-                  {...nearLeftStory} 
+                <StoryCard
+                  {...nearLeftStory}
                   onClick={() => onSelectLeft && onSelectLeft(left.length - 1)}
                 />
               )}
@@ -95,26 +96,28 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
         </div>
 
         {/* Column 3: Center - Main Story */}
-        <div 
-          className="flex w-full justify-center items-center h-[82vh] md:h-[82vh] transition-all duration-300"
-          style={{ 
-            ['view-transition-name' as any]: center.username ? getTransitionName(center.username) : undefined
+        <div
+          className="flex w-full justify-center items-center h-[82vh] md:h-[82vh]"
+          style={{
+            viewTransitionName: center.username ? getTransitionName(center.username) : undefined,
+            viewTransitionClass: 'story-card-center'
           }}
         >
           <div className="h-[80vh] md:h-[82vh] w-[calc(80vh*9/16)] md:w-[calc(82vh*9/16)] max-w-full">
-            <MainStory 
-              {...center} 
+            <MainStory
+              {...center}
               onNext={onNext}
             />
           </div>
         </div>
 
         {/* Column 4: Near Right (Desktop only) */}
-        <div 
-          className="hidden md:flex justify-start items-center h-[50vh] transition-all duration-300"
-          style={{ 
+        <div
+          className="hidden md:flex justify-start items-center h-[50vh]"
+          style={{
             opacity: nearRightStory ? 0.72 : 0,
-            ['view-transition-name' as any]: nearRightStory ? getTransitionName(nearRightStory.username) : undefined
+            viewTransitionName: nearRightStory ? getTransitionName(nearRightStory.username) : undefined,
+            viewTransitionClass: 'story-card-edge'
           }}
         >
           {nearRightStory && (
@@ -122,8 +125,8 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
               {nearRightStory.isLoading ? (
                 <LoadingCard />
               ) : (
-                <StoryCard 
-                  {...nearRightStory} 
+                <StoryCard
+                  {...nearRightStory}
                   onClick={() => onSelectRight && onSelectRight(0)}
                 />
               )}
@@ -132,12 +135,12 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
         </div>
 
         {/* Column 5: Far Right (Desktop only) */}
-        <div 
-          className="hidden md:flex justify-start items-center h-[50vh] transition-all duration-300"
-          style={{ 
+        <div
+          className="hidden md:flex justify-start items-center h-[50vh]"
+          style={{
             opacity: farRightStory ? 0.38 : 0,
-            ['view-transition-name' as any]: farRightStory ? getTransitionName(farRightStory.username) : undefined,
-            ['view-transition-class' as any]: 'story-card-far'
+            viewTransitionName: farRightStory ? getTransitionName(farRightStory.username) : undefined,
+            viewTransitionClass: 'story-card-edge'
           }}
         >
           {farRightStory && (
@@ -145,8 +148,8 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
               {farRightStory.isLoading ? (
                 <LoadingCard />
               ) : (
-                <StoryCard 
-                  {...farRightStory} 
+                <StoryCard
+                  {...farRightStory}
                   onClick={() => onSelectRight && onSelectRight(1)}
                 />
               )}
@@ -157,7 +160,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
 
       {/* Navigation Arrow Right */}
       {onNext && (
-        <button 
+        <button
           onClick={onNext}
           className="absolute right-4 md:right-[calc(50%-calc(82vh*9/32)-36px)] z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white flex items-center justify-center border border-white/10 hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer transform -translate-y-1/2 top-1/2"
         >

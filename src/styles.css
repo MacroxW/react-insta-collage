@@ -2,11 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom View Transition Animations */
+/* ═══════════════════════════════════════════════════════
+   Premium View Transition System
+   ═══════════════════════════════════════════════════════ */
+
+/* Global: smooth morphing for ALL matched elements (cards that 
+   exist in both old & new state slide + scale between positions) */
+::view-transition-group(*) {
+  animation-duration: 0.95s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Default cross-fade for old/new image replacements — 
+   keep it short so matched morphs feel snappy */
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 0.35s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Prevent the old/new images from being mixed on top of each other
+     during the morph — only show the new image */
+  mix-blend-mode: normal;
+}
+
+/* ─── Slide keyframes ─── */
 
 @keyframes slide-in-from-right {
   from {
-    transform: translateX(120%);
+    transform: translateX(80%);
     opacity: 0;
   }
   to {
@@ -21,14 +43,14 @@
     opacity: 1;
   }
   to {
-    transform: translateX(-120%);
+    transform: translateX(-80%);
     opacity: 0;
   }
 }
 
 @keyframes slide-in-from-left {
   from {
-    transform: translateX(-120%);
+    transform: translateX(-80%);
     opacity: 0;
   }
   to {
@@ -43,24 +65,45 @@
     opacity: 1;
   }
   to {
-    transform: translateX(120%);
+    transform: translateX(80%);
     opacity: 0;
   }
 }
 
-/* Next transition direction */
-html.stories-dir-next::view-transition-old(*.story-card-far) {
-  animation: slide-out-to-left 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+/* ─── Direction-aware entry/exit for outermost cards ─── */
+
+/* Going NEXT → new cards enter from right, old cards exit to left */
+html.stories-dir-next::view-transition-old(*.story-card-edge) {
+  animation: none;
+  opacity: 0;
 }
-html.stories-dir-next::view-transition-new(*.story-card-far) {
-  animation: slide-in-from-right 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+html.stories-dir-next::view-transition-new(*.story-card-edge) {
+  animation: none;
+  opacity: 1;
 }
 
-/* Prev transition direction */
-html.stories-dir-prev::view-transition-old(*.story-card-far) {
-  animation: slide-out-to-right 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+/* Going PREV → new cards enter from left, old cards exit to right */
+html.stories-dir-prev::view-transition-old(*.story-card-edge) {
+  animation: none;
+  opacity: 0;
 }
-html.stories-dir-prev::view-transition-new(*.story-card-far) {
-  animation: slide-in-from-left 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+html.stories-dir-prev::view-transition-new(*.story-card-edge) {
+  animation: none;
+  opacity: 1;
 }
 
+/* ─── Center Card Transitions ─── */
+
+/* Center card morphs naturally via ::view-transition-group 
+   No additional animations needed — let the position/size changes drive the morph */
+html.stories-dir-next::view-transition-old(*.story-card-center),
+html.stories-dir-prev::view-transition-old(*.story-card-center) {
+  animation: none;
+  opacity: 0;
+}
+
+html.stories-dir-next::view-transition-new(*.story-card-center),
+html.stories-dir-prev::view-transition-new(*.story-card-center) {
+  animation: none;
+  opacity: 1;
+}
