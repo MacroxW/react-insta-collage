@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { InstaCollage } from '../../src';
 
@@ -24,8 +24,7 @@ const USER_STORIES: UserStories[] = [
     username: "camiquindi",
     profileImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
     slides: [
-      { image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", time: "9h", title: "Día de playa 🌊", subtitle: "Agradecida por este día increíble..." },
-      { image: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80", time: "8h", title: "Clases de surf! 🏄‍♀️", subtitle: "Intentándolo una vez más" }
+      { image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", time: "9h", title: "Día de playa 🌊", subtitle: "Agradecida por este día increíble..." }
     ]
   },
   {
@@ -39,17 +38,14 @@ const USER_STORIES: UserStories[] = [
     username: "angie__ff",
     profileImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
     slides: [
-      { image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80", time: "7h", title: "Feliz Cumple Angie! 🎂", subtitle: "*Pidiendo los tres deseos* ✨", footer: "angie__ff, _.daiarena y 24 personas más" },
-      { image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80", time: "6h", title: "Salud! 🥂", subtitle: "Por muchos años más llenos de risas", footer: "Con los de siempre ❤️" },
-      { image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80", time: "5h", title: "El mejor team ❤️", subtitle: "Gracias a todos por venir!", footer: "Noche inolvidable" }
+      { image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80", time: "7h", title: "Feliz Cumple Angie! 🎂", subtitle: "*Pidiendo los tres deseos* ✨", footer: "angie__ff, _.daiarena y 24 personas más" }
     ]
   },
   {
     username: "romipaluch",
     profileImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
     slides: [
-      { image: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=80", time: "45m", title: "Sendero Verde 🌲", subtitle: "Respirando aire puro" },
-      { image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80", time: "10m", title: "Coffee break ☕", subtitle: "Un mimo al alma en la oficina" }
+      { image: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=80", time: "45m", title: "Sendero Verde 🌲", subtitle: "Respirando aire puro" }
     ]
   },
   {
@@ -57,6 +53,118 @@ const USER_STORIES: UserStories[] = [
     profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
     slides: [
       { image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80", time: "9h", title: "Atardecer mágico 🌅", subtitle: "Terminando el día de la mejor manera" }
+    ]
+  },
+  {
+    username: "lucas_travels",
+    profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80", time: "8h", title: "Ruta nocturna", subtitle: "Kilómetros bajo las estrellas" }
+    ]
+  },
+  {
+    username: "sofia.art",
+    profileImage: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=800&q=80", time: "7h", title: "Tarde de museo", subtitle: "Colores que cuentan historias" }
+    ]
+  },
+  {
+    username: "marcos_dev",
+    profileImage: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80", time: "6h", title: "Deploy time", subtitle: "Cerrando el sprint con café" }
+    ]
+  },
+  {
+    username: "flor_fit",
+    profileImage: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80", time: "5h", title: "Entreno del día", subtitle: "Un poco más fuerte que ayer" }
+    ]
+  },
+  {
+    username: "mateo_foodie",
+    profileImage: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=80", time: "4h", title: "Mesa lista", subtitle: "Probando sabores nuevos" }
+    ]
+  },
+  {
+    username: "delfi_music",
+    profileImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80", time: "3h", title: "Soundcheck", subtitle: "Luces prendidas, todo listo" }
+    ]
+  },
+  {
+    username: "javi.explores",
+    profileImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80", time: "2h", title: "Camino abierto", subtitle: "Sin mapa por un rato" }
+    ]
+  },
+  {
+    username: "belu_design",
+    profileImage: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80", time: "2h", title: "Nuevo estudio", subtitle: "Moodboard, luz y foco" }
+    ]
+  },
+  {
+    username: "santi.clicks",
+    profileImage: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80", time: "1h", title: "Hora dorada", subtitle: "La cámara no descansa" }
+    ]
+  },
+  {
+    username: "coti_green",
+    profileImage: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80", time: "58m", title: "Verde total", subtitle: "Plantas nuevas en casa" }
+    ]
+  },
+  {
+    username: "gaston_run",
+    profileImage: "https://images.unsplash.com/photo-1530268729831-4b0b9e170218?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=800&q=80", time: "45m", title: "10K hechos", subtitle: "Buen ritmo, mejores vistas" }
+    ]
+  },
+  {
+    username: "luli_style",
+    profileImage: "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80", time: "35m", title: "Look del día", subtitle: "Simple, cómodo, favorito" }
+    ]
+  },
+  {
+    username: "nico_cocina",
+    profileImage: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80", time: "30m", title: "Cena casera", subtitle: "Receta improvisada que salió bien" }
+    ]
+  },
+  {
+    username: "pau.reads",
+    profileImage: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80", time: "20m", title: "Capítulo nuevo", subtitle: "Silencio, manta y lectura" }
+    ]
+  },
+  {
+    username: "tomi_sky",
+    profileImage: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80", time: "12m", title: "Boarding", subtitle: "Próxima parada: aventura" }
+    ]
+  },
+  {
+    username: "mora.city",
+    profileImage: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=150&q=80",
+    slides: [
+      { image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800&q=80", time: "5m", title: "Luces de ciudad", subtitle: "La noche recién empieza" }
     ]
   }
 ];
@@ -68,41 +176,6 @@ const POSTS = [
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1472214222541-d510753a4707?auto=format&fit=crop&w=600&q=80",
-];
-
-// Mock data generator utilities for lazy loading
-const MOCK_NAMES = [
-  "lucas_travels", "sofia.art", "marcos_dev", "flor_fit",
-  "mateo_foodie", "delfi_music", "javi.explores", "belu_design",
-  "santi.clicks", "coti_green", "gaston_run", "luli_style"
-];
-const MOCK_AVATARS = [
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-];
-const MOCK_STORY_IMAGES = [
-  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1472214222541-d510753a4707?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
-];
-const MOCK_TITLES = [
-  "Increíble atardecer 🌇", "Working hard 💻", "Naturaleza pura 🌿",
-  "Cafecito mañanero ☕", "Road trip! 🚗", "Entrenamiento del día 💪",
-  "Weekend vibes ✨", "New project loading... 🚀"
-];
-const MOCK_SUBTITLES = [
-  "Agradecido por cada momento.", "Enfocado en lo que viene.", "Desconectando para conectar.",
-  "El mejor combustible.", "No importa el destino, sino el camino.", "Superando mis límites.",
-  "Disfrutando de las pequeñas cosas.", "Se vienen cositas lindas..."
 ];
 
 // ─── Code Snippets for Documentation ─────────────────────
@@ -203,10 +276,6 @@ function App() {
   const [currentUserIndex, setCurrentUserIndex] = useState(2);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [slideIndexMap, setSlideIndexMap] = useState<Record<string, number>>({}); // Guardar slide de cada historia
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [pendingAdvance, setPendingAdvance] = useState(false);
-  const [batchSize, setBatchSize] = useState(10);
-  const [triggerThreshold, setTriggerThreshold] = useState(3);
   const demoRef = useRef<HTMLDivElement>(null);
 
   // ─── View Transitions ───────────────────────────────────
@@ -233,8 +302,6 @@ function App() {
       setStoriesList(USER_STORIES);
       setCurrentUserIndex(userIndex);
       setCurrentSlideIndex(0);
-      setIsLoadingMore(false);
-      setPendingAdvance(false);
       setIsOpen(true);
     });
   };
@@ -245,61 +312,6 @@ function App() {
       document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next');
     });
   };
-
-  // ─── Infinite Loading ───────────────────────────────────
-  const loadMoreStories = useCallback(() => {
-    if (isLoadingMore) return;
-    setIsLoadingMore(true);
-    setStoriesList(prev => {
-      const placeholders = Array.from({ length: batchSize }).map((_, idx) => ({
-        username: `loading_${prev.length + idx + 1}`,
-        profileImage: "",
-        isLoading: true,
-        slides: []
-      }));
-      return [...prev, ...placeholders];
-    });
-    setTimeout(() => {
-      const newUsers: UserStories[] = Array.from({ length: batchSize }).map(() => {
-        const randomName = MOCK_NAMES[Math.floor(Math.random() * MOCK_NAMES.length)] + `_${Math.floor(Math.random() * 100)}`;
-        const randomAvatar = MOCK_AVATARS[Math.floor(Math.random() * MOCK_AVATARS.length)];
-        const slidesCount = Math.floor(Math.random() * 3) + 1;
-        const slides = Array.from({ length: slidesCount }).map((_, sIdx) => ({
-          image: MOCK_STORY_IMAGES[Math.floor(Math.random() * MOCK_STORY_IMAGES.length)],
-          time: `${sIdx + 1}h`,
-          title: MOCK_TITLES[Math.floor(Math.random() * MOCK_TITLES.length)],
-          subtitle: MOCK_SUBTITLES[Math.floor(Math.random() * MOCK_SUBTITLES.length)],
-        }));
-        return { username: randomName, profileImage: randomAvatar, slides };
-      });
-      triggerTransition('next', () => {
-        setStoriesList(prev => {
-          const filtered = prev.filter(u => !u.isLoading);
-          return [...filtered, ...newUsers];
-        });
-        setIsLoadingMore(false);
-      });
-    }, 1500);
-  }, [batchSize, isLoadingMore]);
-
-  useEffect(() => {
-    if (isOpen && currentUserIndex >= storiesList.length - triggerThreshold && !isLoadingMore) {
-      loadMoreStories();
-    }
-  }, [isOpen, currentUserIndex, storiesList.length, isLoadingMore, triggerThreshold, loadMoreStories]);
-
-  useEffect(() => {
-    if (pendingAdvance && !isLoadingMore) {
-      const nextUser = storiesList[currentUserIndex + 1];
-      if (nextUser && !nextUser.isLoading) {
-        triggerTransition('next', () => {
-          setCurrentUserIndex(prev => prev + 1);
-          setCurrentSlideIndex(0);
-          setPendingAdvance(false);
-        });
-      }
-    }
-  }, [pendingAdvance, isLoadingMore, storiesList, currentUserIndex]);
 
   // ─── Auto-save current slide to map ───────────────────
   useEffect(() => {
@@ -313,7 +325,7 @@ function App() {
   const handleNext = () => {
     const activeUser = storiesList[currentUserIndex];
     if (!activeUser || activeUser.isLoading) return;
-    
+
     if (currentSlideIndex < activeUser.slides.length - 1) {
       // Avanza al siguiente slide y guarda
       const nextSlideIndex = currentSlideIndex + 1;
@@ -322,23 +334,17 @@ function App() {
     } else if (currentUserIndex < storiesList.length - 1) {
       // Vamos a la siguiente historia
       const nextUser = storiesList[currentUserIndex + 1];
-      if (nextUser.isLoading) {
-        setPendingAdvance(true);
-      } else {
-        const savedSlideIndex = slideIndexMap[nextUser.username] ?? 0;
-        triggerTransition('next', () => {
-          setCurrentUserIndex(prev => prev + 1);
-          setCurrentSlideIndex(savedSlideIndex);
-        });
-      }
-    } else {
-      triggerTransition('next', () => { setIsOpen(false); });
+      const savedSlideIndex = slideIndexMap[nextUser.username] ?? 0;
+      triggerTransition('next', () => {
+        setCurrentUserIndex(prev => prev + 1);
+        setCurrentSlideIndex(savedSlideIndex);
+      });
     }
   };
 
   const handlePrev = () => {
     const activeUser = storiesList[currentUserIndex];
-    
+
     if (currentSlideIndex > 0) {
       // Retrocede al anterior slide y guarda
       const prevSlideIndex = currentSlideIndex - 1;
@@ -364,9 +370,9 @@ function App() {
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
     const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
-    triggerTransition('prev', () => { 
-      setCurrentUserIndex(targetUserIndex); 
-      setCurrentSlideIndex(savedSlideIndex); 
+    triggerTransition('prev', () => {
+      setCurrentUserIndex(targetUserIndex);
+      setCurrentSlideIndex(savedSlideIndex);
     });
   };
 
@@ -375,9 +381,9 @@ function App() {
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
     const savedSlideIndex = slideIndexMap[targetUser.username] ?? 0;
-    triggerTransition('next', () => { 
-      setCurrentUserIndex(targetUserIndex); 
-      setCurrentSlideIndex(savedSlideIndex); 
+    triggerTransition('next', () => {
+      setCurrentUserIndex(targetUserIndex);
+      setCurrentSlideIndex(savedSlideIndex);
     });
   };
 
@@ -417,10 +423,14 @@ function App() {
     profileImage: centerUser?.profileImage,
     title: activeSlide.title,
     subtitle: activeSlide.subtitle,
-    footer: pendingAdvance ? "⏳ Cargando siguiente..." : activeSlide.footer,
+    footer: activeSlide.footer,
     activeSlideIndex: currentSlideIndex,
     totalSlides: centerUser?.slides?.length || 1,
   };
+  const hasNext = Boolean(
+    centerUser &&
+    (currentSlideIndex < centerUser.slides.length - 1 || currentUserIndex < storiesList.length - 1)
+  );
 
   // ═══════════════════════════════════════════════════════
   // Render
@@ -434,7 +444,7 @@ function App() {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
             </div>
             <span className="font-bold text-lg tracking-tight">react-insta-collage</span>
             <span className="text-[10px] font-semibold bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-pink-400 border border-pink-500/20 px-2 py-0.5 rounded-full tracking-wider uppercase">v1.0</span>
@@ -460,7 +470,7 @@ function App() {
               rel="noopener noreferrer"
               className="ml-2 text-neutral-400 hover:text-white transition-colors p-2"
             >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>
             </a>
           </div>
         </div>
@@ -469,27 +479,27 @@ function App() {
       {/* ─── PAGE: DOCS & DEMO ─── */}
       {page === 'docs' && (
         <div className="animate-[fadeIn_0.3s_ease-out]">
-          
+
           {/* Hero Section */}
           <section className="relative overflow-hidden">
             {/* Ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-pink-500/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-            
+
             <div className="relative max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
               <div className="inline-flex items-center gap-2 bg-neutral-900/60 border border-neutral-800/60 rounded-full px-4 py-1.5 mb-8">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-xs font-medium text-neutral-300">Open Source · MIT Licensed</span>
               </div>
-              
+
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
                 <span className="bg-gradient-to-r from-white via-white to-neutral-400 bg-clip-text text-transparent">Instagram Stories</span>
                 <br />
                 <span className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 bg-clip-text text-transparent">for React</span>
               </h1>
-              
+
               <p className="text-lg text-neutral-400 max-w-xl mx-auto mb-10 leading-relaxed">
                 Componente de collage de historias estilo Instagram con transiciones fluidas,
-                navegación por teclado, carga infinita y View Transitions API.
+                navegación por teclado, lista finita y View Transitions API.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -519,7 +529,7 @@ function App() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { icon: '⚡', title: 'View Transitions', desc: 'Animaciones nativas con la View Transitions API del navegador.' },
-                { icon: '♾️', title: 'Carga Infinita', desc: 'Lazy loading configurable con skeleton placeholders automáticos.' },
+                { icon: '✓', title: 'Lista Finita', desc: 'Recorre una colección estable de historias sin reiniciar al final.' },
                 { icon: '📱', title: 'Responsive', desc: 'Layout de 5 columnas en desktop, 1 columna en mobile.' },
                 { icon: '🎨', title: 'Customizable', desc: 'Pasa tus propios datos, imágenes y callbacks de navegación.' },
               ].map((f, i) => (
@@ -534,7 +544,7 @@ function App() {
 
           {/* Documentation Sections */}
           <section className="max-w-4xl mx-auto px-6 pb-20 space-y-16">
-            
+
             {/* Quick Start */}
             <div>
               <h2 className="text-2xl font-bold tracking-tight mb-2 flex items-center gap-3">
@@ -613,50 +623,28 @@ function App() {
                 <h2 className="text-3xl font-extrabold tracking-tight mb-3">
                   <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Demo Interactiva</span>
                 </h2>
-                <p className="text-neutral-400 text-sm max-w-lg mx-auto">Hacé click en una historia para abrir el visor. Configurá la carga dinámica con los controles de abajo.</p>
+                <p className="text-neutral-400 text-sm max-w-lg mx-auto">Hacé click en una historia para abrir el visor. Hay {USER_STORIES.length} usuarios con imágenes distintas y recorrido finito.</p>
               </div>
             </div>
 
-            {/* Config Panel */}
+            {/* Stories Count */}
             <div className="max-w-3xl mx-auto px-6 mb-8">
               <div className="bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-neutral-800/60 p-6">
-                <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/20 flex items-center justify-center">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400">
-                        <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        <path d="M8 6h13" /><path d="M8 12h13" /><path d="M8 18h13" /><path d="M3 6h.01" /><path d="M3 12h.01" /><path d="M3 18h.01" />
                       </svg>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-sm text-white">Configuración de Carga</h3>
-                      <p className="text-[11px] text-neutral-500">Lazy loading & pre-fetch</p>
+                      <h3 className="font-semibold text-sm text-white">Historias disponibles</h3>
+                      <p className="text-[11px] text-neutral-500">Recorrido lineal, sin loop automático</p>
                     </div>
                   </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-6 items-center">
-                    <div className="flex flex-col gap-2 w-full sm:w-auto">
-                      <div className="flex justify-between items-center text-[11px] uppercase tracking-wider text-neutral-400 font-semibold gap-4">
-                        <span>Batch Size</span>
-                        <span className="text-pink-400 font-bold bg-pink-500/10 px-2 py-0.5 rounded-md text-xs">{batchSize}</span>
-                      </div>
-                      <input
-                        type="range" min="1" max="15" value={batchSize}
-                        onChange={(e) => setBatchSize(Number(e.target.value))}
-                        className="accent-pink-500 bg-neutral-800 rounded-lg appearance-none h-1.5 w-full sm:w-36 cursor-pointer"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2 w-full sm:w-auto">
-                      <div className="flex justify-between items-center text-[11px] uppercase tracking-wider text-neutral-400 font-semibold gap-4">
-                        <span>Threshold</span>
-                        <span className="text-pink-400 font-bold bg-pink-500/10 px-2 py-0.5 rounded-md text-xs">{triggerThreshold}</span>
-                      </div>
-                      <input
-                        type="range" min="1" max="5" value={triggerThreshold}
-                        onChange={(e) => setTriggerThreshold(Number(e.target.value))}
-                        className="accent-pink-500 bg-neutral-800 rounded-lg appearance-none h-1.5 w-full sm:w-44 cursor-pointer"
-                      />
-                    </div>
-                  </div>
+                  <span className="text-pink-400 font-bold bg-pink-500/10 px-3 py-1 rounded-md text-sm">
+                    {USER_STORIES.length} usuarios
+                  </span>
                 </div>
               </div>
             </div>
@@ -690,7 +678,7 @@ function App() {
       {page === 'profile' && (
         <div className="animate-[fadeIn_0.3s_ease-out]">
           <div className="max-w-[935px] mx-auto px-4 py-8 md:py-12">
-            
+
             {/* Stories Tray */}
             <div className="relative flex items-center justify-start gap-6 py-5 px-6 mb-8 bg-neutral-900/20 rounded-2xl border border-neutral-800/50 overflow-x-auto no-scrollbar scroll-smooth">
               {USER_STORIES.map((user, idx) => (
@@ -808,7 +796,7 @@ function App() {
               center={center}
               right={right}
               onPrev={currentUserIndex > 0 || currentSlideIndex > 0 ? handlePrev : undefined}
-              onNext={handleNext}
+              onNext={hasNext ? handleNext : undefined}
               onSelectLeft={handleSelectLeft}
               onSelectRight={handleSelectRight}
             />

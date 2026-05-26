@@ -70,6 +70,90 @@
   }
 }
 
+@keyframes slide-in-from-viewport-left {
+  from {
+    transform: translateX(-100vw);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-to-viewport-left {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100vw);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-from-viewport-right {
+  from {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-to-viewport-right {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+/* ─── Outermost cards enter and leave through the viewport edges ─── */
+
+html.stories-dir-next::view-transition-old(*.story-card-far-left) {
+  animation: slide-out-to-viewport-left 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+html.stories-dir-next::view-transition-new(*.story-card-far-left) {
+  animation: none;
+  opacity: 1;
+}
+
+html.stories-dir-prev::view-transition-old(*.story-card-far-left) {
+  animation: none;
+  opacity: 0;
+}
+html.stories-dir-prev::view-transition-new(*.story-card-far-left) {
+  animation: slide-in-from-viewport-left 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+html.stories-dir-next::view-transition-old(*.story-card-far-right) {
+  animation: none;
+  opacity: 0;
+}
+html.stories-dir-next::view-transition-new(*.story-card-far-right) {
+  animation: slide-in-from-viewport-right 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+html.stories-dir-prev::view-transition-old(*.story-card-far-right) {
+  animation: slide-out-to-viewport-right 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+html.stories-dir-prev::view-transition-new(*.story-card-far-right) {
+  animation: none;
+  opacity: 1;
+}
+
 /* ─── Direction-aware entry/exit for outermost cards ─── */
 
 /* Going NEXT → new cards enter from right, old cards exit to left */
@@ -104,6 +188,25 @@ html.stories-dir-prev::view-transition-old(*.story-card-center) {
 
 html.stories-dir-next::view-transition-new(*.story-card-center),
 html.stories-dir-prev::view-transition-new(*.story-card-center) {
+  animation: none;
+  opacity: 1;
+}
+
+/* ─── Navigation Buttons ─── */
+
+::view-transition-group(*.story-grid-container) {
+  animation-duration: 0.95s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.stories-dir-next::view-transition-old(*.story-grid-container),
+html.stories-dir-prev::view-transition-old(*.story-grid-container) {
+  animation: none;
+  opacity: 0;
+}
+
+html.stories-dir-next::view-transition-new(*.story-grid-container),
+html.stories-dir-prev::view-transition-new(*.story-grid-container) {
   animation: none;
   opacity: 1;
 }
