@@ -13,15 +13,59 @@
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Default cross-fade for old/new image replacements — 
-   keep it short so matched morphs feel snappy */
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root {
+  --stories-card-shift-duration: 0.95s;
+  --stories-card-shift-easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.story-card-far-left {
+  view-transition-class: story-card-far-left;
+}
+
+.story-card-near-left {
+  view-transition-class: story-card-near-left;
+}
+
+.story-card-center {
+  view-transition-class: story-card-center;
+}
+
+.story-card-near-right {
+  view-transition-class: story-card-near-right;
+}
+
+.story-card-far-right {
+  view-transition-class: story-card-far-right;
+}
+
+/* Default cross-fade for old/new image replacements —
+   keep it short for non-card elements. Story cards override this below. */
 ::view-transition-old(*),
 ::view-transition-new(*) {
   animation-duration: 0.35s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  /* Prevent the old/new images from being mixed on top of each other
-     during the morph — only show the new image */
   mix-blend-mode: normal;
+}
+
+::view-transition-old(*.story-card-far-left),
+::view-transition-new(*.story-card-far-left),
+::view-transition-old(*.story-card-near-left),
+::view-transition-new(*.story-card-near-left),
+::view-transition-old(*.story-card-center),
+::view-transition-new(*.story-card-center),
+::view-transition-old(*.story-card-near-right),
+::view-transition-new(*.story-card-near-right),
+::view-transition-old(*.story-card-far-right),
+::view-transition-new(*.story-card-far-right) {
+  animation-duration: var(--stories-card-shift-duration);
+  animation-timing-function: var(--stories-card-shift-easing);
 }
 
 /* ─── Slide keyframes ─── */
@@ -120,65 +164,73 @@
   }
 }
 
+@keyframes story-card-dom-exit-left {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100vw);
+    opacity: 0;
+  }
+}
+
+@keyframes story-card-dom-exit-right {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+.story-card-dom-exit-left {
+  animation: story-card-dom-exit-left var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
+}
+
+.story-card-dom-exit-right {
+  animation: story-card-dom-exit-right var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
+}
+
 /* ─── Outermost cards enter and leave through the viewport edges ─── */
 
 html.stories-dir-next::view-transition-old(*.story-card-far-left) {
-  animation: slide-out-to-viewport-left 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: none;
+  opacity: 0;
 }
+
 html.stories-dir-next::view-transition-new(*.story-card-far-left) {
-  animation: none;
-  opacity: 1;
+  z-index: 1;
 }
 
-html.stories-dir-prev::view-transition-old(*.story-card-far-left) {
-  animation: none;
-  opacity: 0;
-}
 html.stories-dir-prev::view-transition-new(*.story-card-far-left) {
-  animation: slide-in-from-viewport-left 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: slide-in-from-viewport-left var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
 
-html.stories-dir-next::view-transition-old(*.story-card-far-right) {
-  animation: none;
-  opacity: 0;
-}
 html.stories-dir-next::view-transition-new(*.story-card-far-right) {
-  animation: slide-in-from-viewport-right 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: slide-in-from-viewport-right var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
 
 html.stories-dir-prev::view-transition-old(*.story-card-far-right) {
-  animation: slide-out-to-viewport-right 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: none;
+  opacity: 0;
 }
+
 html.stories-dir-prev::view-transition-new(*.story-card-far-right) {
-  animation: none;
-  opacity: 1;
+  z-index: 1;
 }
 
-/* ─── Direction-aware entry/exit for outermost cards ─── */
-
-/* Going NEXT → new cards enter from right, old cards exit to left */
-html.stories-dir-next::view-transition-old(*.story-card-near-left),
-html.stories-dir-next::view-transition-old(*.story-card-near-right) {
-  animation: none;
-  opacity: 0;
-}
-html.stories-dir-next::view-transition-new(*.story-card-near-left),
-html.stories-dir-next::view-transition-new(*.story-card-near-right) {
-  animation: none;
-  opacity: 1;
-}
-
-/* Going PREV → new cards enter from left, old cards exit to right */
-html.stories-dir-prev::view-transition-old(*.story-card-near-left),
-html.stories-dir-prev::view-transition-old(*.story-card-near-right) {
-  animation: none;
-  opacity: 0;
-}
-html.stories-dir-prev::view-transition-new(*.story-card-near-left),
-html.stories-dir-prev::view-transition-new(*.story-card-near-right) {
-  animation: none;
-  opacity: 1;
-}
+/* Near and center cards keep the default old/new snapshots so the same
+   story morphs between slots instead of looking like the replacement card
+   owns the exit animation. */
 
 /* Clicking far-left/far-right jumps two positions. In that case, keep the
    geometry morph but hide old snapshots so they do not sit above replacements. */
@@ -212,26 +264,12 @@ html.stories-dir-jump-prev::view-transition-new(*.story-card-center) {
 
 html.stories-dir-jump-next::view-transition-new(*.story-card-near-right),
 html.stories-dir-jump-next::view-transition-new(*.story-card-far-right) {
-  animation: slide-in-from-viewport-right 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: slide-in-from-viewport-right var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
 
 html.stories-dir-jump-prev::view-transition-new(*.story-card-far-left),
 html.stories-dir-jump-prev::view-transition-new(*.story-card-near-left) {
-  animation: slide-in-from-viewport-left 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: slide-in-from-viewport-left var(--stories-card-shift-duration) var(--stories-card-shift-easing) forwards;
 }
 
-/* ─── Center Card Transitions ─── */
-
-/* Center card morphs naturally via ::view-transition-group 
-   No additional animations needed — let the position/size changes drive the morph */
-html.stories-dir-next::view-transition-old(*.story-card-center),
-html.stories-dir-prev::view-transition-old(*.story-card-center) {
-  animation: none;
-  opacity: 0;
-}
-
-html.stories-dir-next::view-transition-new(*.story-card-center),
-html.stories-dir-prev::view-transition-new(*.story-card-center) {
-  animation: none;
-  opacity: 1;
-}
+/* Center card morphs naturally via ::view-transition-group. */

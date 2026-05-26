@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { InstaCollageProps } from '../types';
+import { InstaCollageProps, StoryData } from '../types';
 import { StoryCard } from './StoryCard';
 import { MainStory } from './MainStory';
 import { LoadingCard } from './LoadingCard';
@@ -30,6 +30,50 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
   const nearLeftStory = left.length === 2 ? left[1] : left.length === 1 ? left[0] : null;
   const nearRightStory = right.length >= 1 ? right[0] : null;
   const farRightStory = right.length === 2 ? right[1] : null;
+  const previousStoriesRef = useRef<{
+    farLeftStory: StoryData | null;
+    farRightStory: StoryData | null;
+  } | null>(null);
+  const [exitingFarLeftStory, setExitingFarLeftStory] = useState<StoryData | null>(null);
+  const [exitingFarRightStory, setExitingFarRightStory] = useState<StoryData | null>(null);
+  const clearFarLeftTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const clearFarRightTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    const visibleUsernames = new Set(
+      [farLeftStory, nearLeftStory, center, nearRightStory, farRightStory]
+        .map((story) => story?.username)
+        .filter(Boolean)
+    );
+    const previousStories = previousStoriesRef.current;
+
+    if (
+      previousStories?.farLeftStory &&
+      !visibleUsernames.has(previousStories.farLeftStory.username)
+    ) {
+      if (clearFarLeftTimerRef.current) clearTimeout(clearFarLeftTimerRef.current);
+      setExitingFarLeftStory(previousStories.farLeftStory);
+      clearFarLeftTimerRef.current = setTimeout(() => setExitingFarLeftStory(null), 950);
+    }
+
+    if (
+      previousStories?.farRightStory &&
+      !visibleUsernames.has(previousStories.farRightStory.username)
+    ) {
+      if (clearFarRightTimerRef.current) clearTimeout(clearFarRightTimerRef.current);
+      setExitingFarRightStory(previousStories.farRightStory);
+      clearFarRightTimerRef.current = setTimeout(() => setExitingFarRightStory(null), 950);
+    }
+
+    previousStoriesRef.current = { farLeftStory, farRightStory };
+  }, [center.username, farLeftStory, farRightStory, nearLeftStory, nearRightStory]);
+
+  useEffect(() => {
+    return () => {
+      if (clearFarLeftTimerRef.current) clearTimeout(clearFarLeftTimerRef.current);
+      if (clearFarRightTimerRef.current) clearTimeout(clearFarRightTimerRef.current);
+    };
+  }, []);
 
   return (
     <div className="w-full flex items-center justify-center select-none py-4">
@@ -56,20 +100,38 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           <div
             className="hidden md:flex justify-end items-center h-[50vh]"
             style={{
-              opacity: farLeftStory ? 0.38 : 0,
-              viewTransitionName: farLeftStory ? getTransitionName(farLeftStory.username) : undefined,
-              viewTransitionClass: 'story-card-far-left'
+              opacity: farLeftStory || exitingFarLeftStory ? 0.38 : 0,
             }}
           >
-            {farLeftStory && (
-              <div className="h-[50vh] w-[calc(50vh*9/16)]">
-                {farLeftStory.isLoading ? (
-                  <LoadingCard />
-                ) : (
-                  <StoryCard
-                    {...farLeftStory}
-                    onClick={() => onSelectLeft && onSelectLeft(0)}
-                  />
+            {(farLeftStory || exitingFarLeftStory) && (
+              <div className="relative h-[50vh] w-[calc(50vh*9/16)]">
+                {farLeftStory && (
+                  <div
+                    className="story-card-far-left h-full w-full"
+                    style={{
+                      viewTransitionName: getTransitionName(farLeftStory.username),
+                      viewTransitionClass: 'story-card-far-left'
+                    }}
+                  >
+                    {farLeftStory.isLoading ? (
+                      <LoadingCard />
+                    ) : (
+                      <StoryCard
+                        {...farLeftStory}
+                        onClick={() => onSelectLeft && onSelectLeft(0)}
+                      />
+                    )}
+                  </div>
+                )}
+                {exitingFarLeftStory && !exitingFarLeftStory.isLoading && (
+                  <div className="story-card-dom-exit-left absolute inset-0 z-20 pointer-events-none">
+                    <StoryCard {...exitingFarLeftStory} />
+                  </div>
+                )}
+                {exitingFarLeftStory?.isLoading && (
+                  <div className="story-card-dom-exit-left absolute inset-0 z-20 pointer-events-none">
+                    <LoadingCard />
+                  </div>
                 )}
               </div>
             )}
@@ -80,12 +142,16 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
             className="hidden md:flex justify-end items-center h-[50vh]"
             style={{
               opacity: nearLeftStory ? 0.72 : 0,
-              viewTransitionName: nearLeftStory ? getTransitionName(nearLeftStory.username) : undefined,
-              viewTransitionClass: 'story-card-near-left'
             }}
           >
             {nearLeftStory && (
-              <div className="h-[50vh] w-[calc(50vh*9/16)]">
+              <div
+                className="story-card-near-left h-[50vh] w-[calc(50vh*9/16)]"
+                style={{
+                  viewTransitionName: getTransitionName(nearLeftStory.username),
+                  viewTransitionClass: 'story-card-near-left'
+                }}
+              >
                 {nearLeftStory.isLoading ? (
                   <LoadingCard />
                 ) : (
@@ -99,14 +165,14 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           </div>
 
           {/* Column 3: Center - Main Story */}
-          <div
-            className="flex w-full justify-center items-center h-[82vh] md:h-[82vh]"
-            style={{
-              viewTransitionName: center.username ? getTransitionName(center.username) : undefined,
-              viewTransitionClass: 'story-card-center'
-            }}
-          >
-            <div className="h-[80vh] md:h-[82vh] w-[calc(80vh*9/16)] md:w-[calc(82vh*9/16)] max-w-full">
+          <div className="flex w-full justify-center items-center h-[82vh] md:h-[82vh]">
+            <div
+              className="story-card-center h-[80vh] md:h-[82vh] w-[calc(80vh*9/16)] md:w-[calc(82vh*9/16)] max-w-full"
+              style={{
+                viewTransitionName: center.username ? getTransitionName(center.username) : undefined,
+                viewTransitionClass: 'story-card-center'
+              }}
+            >
               <MainStory
                 {...center}
                 onNext={onNext}
@@ -119,12 +185,16 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
             className="hidden md:flex justify-start items-center h-[50vh]"
             style={{
               opacity: nearRightStory ? 0.72 : 0,
-              viewTransitionName: nearRightStory ? getTransitionName(nearRightStory.username) : undefined,
-              viewTransitionClass: 'story-card-near-right'
             }}
           >
             {nearRightStory && (
-              <div className="h-[50vh] w-[calc(50vh*9/16)]">
+              <div
+                className="story-card-near-right h-[50vh] w-[calc(50vh*9/16)]"
+                style={{
+                  viewTransitionName: getTransitionName(nearRightStory.username),
+                  viewTransitionClass: 'story-card-near-right'
+                }}
+              >
                 {nearRightStory.isLoading ? (
                   <LoadingCard />
                 ) : (
@@ -141,20 +211,38 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           <div
             className="hidden md:flex justify-start items-center h-[50vh]"
             style={{
-              opacity: farRightStory ? 0.38 : 0,
-              viewTransitionName: farRightStory ? getTransitionName(farRightStory.username) : undefined,
-              viewTransitionClass: 'story-card-far-right'
+              opacity: farRightStory || exitingFarRightStory ? 0.38 : 0,
             }}
           >
-            {farRightStory && (
-              <div className="h-[50vh] w-[calc(50vh*9/16)]">
-                {farRightStory.isLoading ? (
-                  <LoadingCard />
-                ) : (
-                  <StoryCard
-                    {...farRightStory}
-                    onClick={() => onSelectRight && onSelectRight(1)}
-                  />
+            {(farRightStory || exitingFarRightStory) && (
+              <div className="relative h-[50vh] w-[calc(50vh*9/16)]">
+                {farRightStory && (
+                  <div
+                    className="story-card-far-right h-full w-full"
+                    style={{
+                      viewTransitionName: getTransitionName(farRightStory.username),
+                      viewTransitionClass: 'story-card-far-right'
+                    }}
+                  >
+                    {farRightStory.isLoading ? (
+                      <LoadingCard />
+                    ) : (
+                      <StoryCard
+                        {...farRightStory}
+                        onClick={() => onSelectRight && onSelectRight(1)}
+                      />
+                    )}
+                  </div>
+                )}
+                {exitingFarRightStory && !exitingFarRightStory.isLoading && (
+                  <div className="story-card-dom-exit-right absolute inset-0 z-20 pointer-events-none">
+                    <StoryCard {...exitingFarRightStory} />
+                  </div>
+                )}
+                {exitingFarRightStory?.isLoading && (
+                  <div className="story-card-dom-exit-right absolute inset-0 z-20 pointer-events-none">
+                    <LoadingCard />
+                  </div>
                 )}
               </div>
             )}
