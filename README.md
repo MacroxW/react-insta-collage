@@ -98,4 +98,4 @@ const MyCollage = () => {
 
 ## License
 
-MIT © [Your Name]
+MIT © [Marcos Wendy]

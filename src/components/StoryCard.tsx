@@ -1,50 +1,54 @@
 import React from 'react';
 import { StoryData } from '../types';
 
-export const StoryCard: React.FC<StoryData> = ({
+interface StoryCardProps extends StoryData {
+  onClick?: () => void;
+}
+
+export const StoryCard: React.FC<StoryCardProps> = ({
   image,
   username,
   time,
-  extraText,
   profileImage,
+  onClick,
 }) => {
   return (
-    <div className="relative rounded-3xl overflow-hidden aspect-[9/16] shadow-xl border border-gray-700/80 group bg-gray-900 w-full max-w-[280px] mx-auto">
-      <img
-        src={image}
-        alt={username}
-        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
-      />
+    <div 
+      onClick={onClick}
+      className="relative rounded-2xl overflow-hidden aspect-[9/16] shadow-2xl border border-white/10 group bg-neutral-900 w-full max-w-[220px] mx-auto cursor-pointer transition-all duration-350 hover:scale-[1.03] hover:border-white/20 select-none"
+    >
+      {/* Background Image - dimmed */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={image}
+          alt={username}
+          className="w-full h-full object-cover brightness-[0.45] transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
 
-      {/* Profile Ring */}
-      <div className="absolute top-3 left-3 w-11 h-11 rounded-full p-[2px] bg-gradient-to-tr from-pink-500 to-orange-400">
-        <div className="w-full h-full rounded-full border-[2.5px] border-black overflow-hidden bg-gray-800">
-          <img
-            src={profileImage || image}
-            alt={username}
-            className="w-full h-full object-cover"
-          />
+      {/* Center Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center z-10">
+        {/* Profile Ring (Instagram Gradient) */}
+        <div className="w-16 h-16 rounded-full p-[2.5px] bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 shadow-lg mb-3">
+          <div className="w-full h-full rounded-full border-[3px] border-[#18181b] overflow-hidden bg-neutral-800">
+            <img
+              src={profileImage || image}
+              alt={username}
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Three dots icon */}
-      <div className="absolute top-4 right-4 text-white opacity-80">
-        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+        {/* Username */}
+        <span className="font-semibold text-sm text-white tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] truncate max-w-full">
+          {username}
+        </span>
+        
+        {/* Time */}
+        <span className="text-[11px] text-white/70 font-medium mt-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+          {time}
+        </span>
       </div>
-
-      {/* Info */}
-      <div className="absolute bottom-3 left-3 text-white">
-        <p className="font-bold text-sm drop-shadow-md">@{username}</p>
-        <p className="text-[10px] text-gray-300 font-medium">{time}</p>
-      </div>
-
-      {extraText && (
-        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1.5 rounded-xl max-w-[70%] text-right leading-tight">
-          {extraText.split('\n').map((line, i) => (
-            <p key={i}>{line}</p>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

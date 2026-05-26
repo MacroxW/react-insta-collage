@@ -1,60 +1,181 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MainStoryData } from '../types';
 
-export const MainStory: React.FC<MainStoryData> = ({
+interface MainStoryProps extends MainStoryData {
+  isActive?: boolean;
+  onNext?: () => void;
+}
+
+export const MainStory: React.FC<MainStoryProps> = ({
   image,
+  username = 'instagram_user',
+  time = '2h',
+  profileImage,
   title,
   subtitle,
   footer,
+  isActive = true,
+  onNext,
+  activeSlideIndex = 0,
+  totalSlides = 1,
 }) => {
+  const [progress, setProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-advance progress bar when active and not paused
+  useEffect(() => {
+    if (!isActive || isPaused) return;
+
+    const duration = 5000; // 5 seconds per story
+    const intervalTime = 50; // Update every 50ms
+    const steps = duration / intervalTime;
+    const stepIncrement = 100 / steps;
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          if (onNext) onNext();
+          return 100;
+        }
+        return prev + stepIncrement;
+      });
+    }, intervalTime);
+
+    return () => clearInterval(interval);
+  }, [isActive, isPaused, onNext, image]); // Reset timer when image changes
+
+  // Reset progress when image changes
+  useEffect(() => {
+    setProgress(0);
+  }, [image]);
+
   return (
-    <div className="relative flex-1 w-full max-w-[420px] aspect-[9/16] rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-700/80 bg-gray-900 group">
-      {/* Top Progress Bar */}
-      <div className="absolute top-3 left-4 right-4 flex gap-1 z-10">
-        <div className="h-0.5 flex-1 bg-white/40 rounded-full overflow-hidden">
-          <div className="h-full bg-white w-full"></div>
+    <div className="relative flex-1 w-full max-w-[420px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#121212] group flex flex-col justify-between select-none">
+      
+      {/* Top Header Overlay */}
+      <div className="absolute top-0 inset-x-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent p-3 pt-4 pb-12 z-10 pointer-events-auto">
+        {/* Progress Bars */}
+        <div className="flex gap-1 mb-3">
+          {Array.from({ length: totalSlides }).map((_, idx) => (
+            <div key={idx} className="h-[2px] flex-1 bg-white/30 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-white transition-all duration-75 ease-linear" 
+                style={{ 
+                  width: idx < activeSlideIndex 
+                    ? '100%' 
+                    : idx === activeSlideIndex 
+                      ? `${progress}%` 
+                      : '0%' 
+                }}
+              ></div>
+            </div>
+          ))}
         </div>
-        <div className="h-0.5 flex-1 bg-white/40 rounded-full"></div>
+
+        {/* User Info & Controls */}
+        <div className="flex items-center justify-between text-white">
+          <div className="flex items-center gap-2.5">
+            {/* Profile Image */}
+            <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600">
+              <div className="w-full h-full rounded-full border border-black overflow-hidden bg-neutral-800">
+                <img
+                  src={profileImage || image}
+                  alt={username}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            
+            {/* Username & Time */}
+            <span className="font-semibold text-[13px] tracking-wide shadow-sm">
+              {username}
+            </span>
+            <span className="text-[11px] text-white/60 font-medium">
+              {time}
+            </span>
+          </div>
+
+          {/* Top Right Controls */}
+          <div className="flex items-center gap-3">
+            {/* Play/Pause Button */}
+            <button 
+              onClick={() => setIsPaused(!isPaused)} 
+              className="hover:scale-110 transition-transform active:scale-95 cursor-pointer text-white/90 hover:text-white"
+              title={isPaused ? "Play" : "Pause"}
+            >
+              {isPaused ? (
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+              )}
+            </button>
+
+            {/* Options (Three Dots) */}
+            <button className="hover:scale-110 transition-transform active:scale-95 cursor-pointer text-white/90 hover:text-white">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="19" cy="12" r="1"></circle>
+                <circle cx="5" cy="12" r="1"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <img
-        src={image}
-        alt="Main Story"
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
+      {/* Main Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={image}
+          alt="Story Content"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-      {/* Overlays */}
-      <div className="absolute inset-0 flex flex-col justify-between p-8 pt-10 text-white pointer-events-none">
+      {/* Overlays / Story Text */}
+      <div className="absolute inset-0 flex flex-col justify-between p-6 pt-20 pb-20 text-white pointer-events-none z-5">
         {title && (
-          <div className="text-center">
-            <h2 className="text-2xl md:text-3xl font-black drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] leading-tight uppercase tracking-tight">
+          <div className="text-center mt-6">
+            <h2 className="text-xl md:text-2xl font-extrabold drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight tracking-wide uppercase">
               {title}
             </h2>
           </div>
         )}
 
-        {subtitle && (
-          <div className="text-center mb-8">
-            <p className="text-xl md:text-2xl font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] italic">
+        <div className="flex flex-col gap-2 items-center text-center mb-6">
+          {subtitle && (
+            <p className="text-lg md:text-xl font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] italic bg-black/35 px-3 py-1 rounded-lg inline-block mx-auto max-w-[90%]">
               {subtitle}
             </p>
-          </div>
-        )}
-      </div>
-
-      {/* Interaction Icons Top Right */}
-      <div className="absolute top-8 right-6 flex gap-4 text-white drop-shadow-lg z-10">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </div>
-
-      {footer && (
-        <div className="absolute bottom-8 left-0 right-0 px-8 text-center">
-          <p className="text-xs md:text-sm text-gray-400 font-medium drop-shadow-md">
-            {footer}
-          </p>
+          )}
+          {footer && (
+            <p className="text-xs text-white/80 font-medium drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] bg-black/20 px-2 py-0.5 rounded max-w-[90%]">
+              {footer}
+            </p>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Bottom Bar: Send Message */}
+      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent p-4 pt-10 z-10 flex items-center gap-3">
+        <div className="flex-1 bg-transparent border border-white/40 rounded-full px-4 py-2 text-white/95 text-[13px] placeholder-white/70 backdrop-blur-[2px] focus-within:border-white transition-colors flex items-center">
+          <input 
+            type="text" 
+            placeholder="Enviar mensaje..." 
+            className="bg-transparent border-none outline-none w-full text-white placeholder-white/60 pointer-events-auto"
+          />
+        </div>
+        <button className="text-white hover:scale-105 transition-transform active:scale-95 p-1 cursor-pointer pointer-events-auto">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };

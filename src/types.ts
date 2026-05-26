@@ -8,9 +8,14 @@ export interface StoryData {
 
 export interface MainStoryData {
   image: string;
+  username?: string;
+  time?: string;
+  profileImage?: string;
   title?: string;
   subtitle?: string;
   footer?: string;
+  activeSlideIndex?: number;
+  totalSlides?: number;
 }
 
 export interface InstaCollageProps {
@@ -18,4 +23,8 @@ export interface InstaCollageProps {
   center: MainStoryData;
   right: StoryData[];
   className?: string;
+  onPrev?: () => void;
+  onNext?: () => void;
+  onSelectLeft?: (index: number) => void;
+  onSelectRight?: (index: number) => void;
 }
