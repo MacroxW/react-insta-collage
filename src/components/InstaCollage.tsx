@@ -11,6 +11,11 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const getTransitionName = (username: string) => {
+  // Replace all non-alphanumeric/hyphen/underscore characters with an underscore
+  return `story-card-${username.replace(/[^a-zA-Z0-9-_]/g, '_')}`;
+};
+
 export const InstaCollage: React.FC<InstaCollageProps> = ({
   left,
   center,
@@ -49,7 +54,8 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           className="hidden md:flex justify-end items-center h-[50vh] transition-all duration-300"
           style={{ 
             opacity: farLeftStory ? 0.38 : 0,
-            ['view-transition-name' as any]: farLeftStory ? `story-card-${farLeftStory.username}` : undefined
+            ['view-transition-name' as any]: farLeftStory ? getTransitionName(farLeftStory.username) : undefined,
+            ['view-transition-class' as any]: 'story-card-far'
           }}
         >
           {farLeftStory && (
@@ -71,7 +77,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           className="hidden md:flex justify-end items-center h-[50vh] transition-all duration-300"
           style={{ 
             opacity: nearLeftStory ? 0.72 : 0,
-            ['view-transition-name' as any]: nearLeftStory ? `story-card-${nearLeftStory.username}` : undefined
+            ['view-transition-name' as any]: nearLeftStory ? getTransitionName(nearLeftStory.username) : undefined
           }}
         >
           {nearLeftStory && (
@@ -92,7 +98,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
         <div 
           className="flex w-full justify-center items-center h-[82vh] md:h-[82vh] transition-all duration-300"
           style={{ 
-            ['view-transition-name' as any]: center.username ? `story-card-${center.username}` : undefined
+            ['view-transition-name' as any]: center.username ? getTransitionName(center.username) : undefined
           }}
         >
           <div className="h-[80vh] md:h-[82vh] w-[calc(80vh*9/16)] md:w-[calc(82vh*9/16)] max-w-full">
@@ -108,7 +114,7 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           className="hidden md:flex justify-start items-center h-[50vh] transition-all duration-300"
           style={{ 
             opacity: nearRightStory ? 0.72 : 0,
-            ['view-transition-name' as any]: nearRightStory ? `story-card-${nearRightStory.username}` : undefined
+            ['view-transition-name' as any]: nearRightStory ? getTransitionName(nearRightStory.username) : undefined
           }}
         >
           {nearRightStory && (
@@ -130,7 +136,8 @@ export const InstaCollage: React.FC<InstaCollageProps> = ({
           className="hidden md:flex justify-start items-center h-[50vh] transition-all duration-300"
           style={{ 
             opacity: farRightStory ? 0.38 : 0,
-            ['view-transition-name' as any]: farRightStory ? `story-card-${farRightStory.username}` : undefined
+            ['view-transition-name' as any]: farRightStory ? getTransitionName(farRightStory.username) : undefined,
+            ['view-transition-class' as any]: 'story-card-far'
           }}
         >
           {farRightStory && (

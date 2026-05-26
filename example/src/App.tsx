@@ -167,15 +167,12 @@ function App() {
   const [batchSize, setBatchSize] = useState(10);
   const [triggerThreshold, setTriggerThreshold] = useState(3);
 
-  const handleOpenStories = (userIndex = 2) => {
+  const triggerTransition = (direction: 'next' | 'prev', callback: () => void) => {
     const update = () => {
       flushSync(() => {
-        setStoriesList(USER_STORIES);
-        setCurrentUserIndex(userIndex);
-        setCurrentSlideIndex(0);
-        setIsLoadingMore(false);
-        setPendingAdvance(false);
-        setIsOpen(true);
+        document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next');
+        document.documentElement.classList.add(`stories-dir-${direction}`);
+        callback();
       });
     };
 
@@ -186,18 +183,22 @@ function App() {
     }
   };
 
-  const handleCloseStories = () => {
-    const update = () => {
-      flushSync(() => {
-        setIsOpen(false);
-      });
-    };
+  const handleOpenStories = (userIndex = 2) => {
+    triggerTransition('next', () => {
+      setStoriesList(USER_STORIES);
+      setCurrentUserIndex(userIndex);
+      setCurrentSlideIndex(0);
+      setIsLoadingMore(false);
+      setPendingAdvance(false);
+      setIsOpen(true);
+    });
+  };
 
-    if ('startViewTransition' in document) {
-      (document as any).startViewTransition(update);
-    } else {
-      update();
-    }
+  const handleCloseStories = () => {
+    triggerTransition('next', () => {
+      setIsOpen(false);
+      document.documentElement.classList.remove('stories-dir-prev', 'stories-dir-next');
+    });
   };
 
   const loadMoreStories = useCallback(() => {
@@ -242,22 +243,14 @@ function App() {
         };
       });
 
-      const update = () => {
-        flushSync(() => {
-          setStoriesList(prev => {
-            // Remove placeholders and add new users
-            const filtered = prev.filter(u => !u.isLoading);
-            return [...filtered, ...newUsers];
-          });
-          setIsLoadingMore(false);
+      triggerTransition('next', () => {
+        setStoriesList(prev => {
+          // Remove placeholders and add new users
+          const filtered = prev.filter(u => !u.isLoading);
+          return [...filtered, ...newUsers];
         });
-      };
-
-      if ('startViewTransition' in document) {
-        (document as any).startViewTransition(update);
-      } else {
-        update();
-      }
+        setIsLoadingMore(false);
+      });
     }, 1500);
   }, [batchSize, isLoadingMore]);
 
@@ -273,18 +266,11 @@ function App() {
     if (pendingAdvance && !isLoadingMore) {
       const nextUser = storiesList[currentUserIndex + 1];
       if (nextUser && !nextUser.isLoading) {
-        const update = () => {
-          flushSync(() => {
-            setCurrentUserIndex(prev => prev + 1);
-            setCurrentSlideIndex(0);
-            setPendingAdvance(false);
-          });
-        };
-        if ('startViewTransition' in document) {
-          (document as any).startViewTransition(update);
-        } else {
-          update();
-        }
+        triggerTransition('next', () => {
+          setCurrentUserIndex(prev => prev + 1);
+          setCurrentSlideIndex(0);
+          setPendingAdvance(false);
+        });
       }
     }
   }, [pendingAdvance, isLoadingMore, storiesList, currentUserIndex]);
@@ -293,60 +279,43 @@ function App() {
     const activeUser = storiesList[currentUserIndex];
     if (!activeUser || activeUser.isLoading) return;
     
-    const update = () => {
-      flushSync(() => {
-        // Go to next slide of the current user if available
-        if (currentSlideIndex < activeUser.slides.length - 1) {
-          setCurrentSlideIndex(prev => prev + 1);
-        } 
-        // Go to first slide of the next user if available
-        else if (currentUserIndex < storiesList.length - 1) {
-          const nextUser = storiesList[currentUserIndex + 1];
-          if (nextUser.isLoading) {
-            setPendingAdvance(true);
-          } else {
-            setCurrentUserIndex(prev => prev + 1);
-            setCurrentSlideIndex(0);
-          }
-        } 
-        // Otherwise, close stories viewer
-        else {
-          setIsOpen(false);
-        }
+    // Go to next slide of the current user if available
+    if (currentSlideIndex < activeUser.slides.length - 1) {
+      setCurrentSlideIndex(prev => prev + 1);
+    } 
+    // Go to first slide of the next user if available
+    else if (currentUserIndex < storiesList.length - 1) {
+      const nextUser = storiesList[currentUserIndex + 1];
+      if (nextUser.isLoading) {
+        setPendingAdvance(true);
+      } else {
+        triggerTransition('next', () => {
+          setCurrentUserIndex(prev => prev + 1);
+          setCurrentSlideIndex(0);
+        });
+      }
+    } 
+    // Otherwise, close stories viewer
+    else {
+      triggerTransition('next', () => {
+        setIsOpen(false);
       });
-    };
-
-    if ('startViewTransition' in document) {
-      (document as any).startViewTransition(update);
-    } else {
-      update();
     }
   };
 
   const handlePrev = () => {
-    const update = () => {
-      flushSync(() => {
-        // Go to previous slide of the current user if available
-        if (currentSlideIndex > 0) {
-          setCurrentSlideIndex(prev => prev - 1);
-        } 
-        // Go to last slide of the previous user if available
-        else if (currentUserIndex > 0) {
-          const prevUserIndex = currentUserIndex - 1;
-          const prevUser = storiesList[prevUserIndex];
-          if (prevUser && !prevUser.isLoading) {
-            const prevUserSlidesCount = prevUser.slides.length;
-            setCurrentUserIndex(prevUserIndex);
-            setCurrentSlideIndex(prevUserSlidesCount - 1);
-          }
-        }
-      });
-    };
-
-    if ('startViewTransition' in document) {
-      (document as any).startViewTransition(update);
-    } else {
-      update();
+    if (currentSlideIndex > 0) {
+      setCurrentSlideIndex(prev => prev - 1);
+    } else if (currentUserIndex > 0) {
+      const prevUserIndex = currentUserIndex - 1;
+      const prevUser = storiesList[prevUserIndex];
+      if (prevUser && !prevUser.isLoading) {
+        triggerTransition('prev', () => {
+          const prevUserSlidesCount = prevUser.slides.length;
+          setCurrentUserIndex(prevUserIndex);
+          setCurrentSlideIndex(prevUserSlidesCount - 1);
+        });
+      }
     }
   };
 
@@ -358,18 +327,10 @@ function App() {
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
 
-    const update = () => {
-      flushSync(() => {
-        setCurrentUserIndex(targetUserIndex);
-        setCurrentSlideIndex(0);
-      });
-    };
-
-    if ('startViewTransition' in document) {
-      (document as any).startViewTransition(update);
-    } else {
-      update();
-    }
+    triggerTransition('prev', () => {
+      setCurrentUserIndex(targetUserIndex);
+      setCurrentSlideIndex(0);
+    });
   };
 
   const handleSelectRight = (idx: number) => {
@@ -377,18 +338,10 @@ function App() {
     const targetUser = storiesList[targetUserIndex];
     if (targetUser && targetUser.isLoading) return;
     
-    const update = () => {
-      flushSync(() => {
-        setCurrentUserIndex(targetUserIndex);
-        setCurrentSlideIndex(0);
-      });
-    };
-
-    if ('startViewTransition' in document) {
-      (document as any).startViewTransition(update);
-    } else {
-      update();
-    }
+    triggerTransition('next', () => {
+      setCurrentUserIndex(targetUserIndex);
+      setCurrentSlideIndex(0);
+    });
   };
 
   // Dynamically calculate left and right stories relative to currentUserIndex
