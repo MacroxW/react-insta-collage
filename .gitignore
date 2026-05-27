@@ -145,3 +145,4 @@ vite.config.ts.timestamp-*
 dist/
 example/node_modules/
 node_modules/
+src/compiled.css

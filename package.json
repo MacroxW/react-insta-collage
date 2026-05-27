@@ -1,6 +1,6 @@
 {
   "name": "react-insta-collage",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "A React library to create Instagram Story style collages.",
   "homepage": "https://macroxw.github.io/react-insta-collage/",
   "repository": {
@@ -14,8 +14,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build:css": "tailwindcss -i src/styles.css -o src/compiled.css --minify",
+    "build": "pnpm run build:css && tsup",
+    "dev": "pnpm run build:css && tsup --watch",
     "lint": "tsc",
     "publish:npm": "pnpm run lint && pnpm run build && pnpm publish --no-git-checks",
     "publish:dry": "pnpm run lint && pnpm run build && pnpm pack"

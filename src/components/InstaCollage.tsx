@@ -5,7 +5,7 @@ import { InstaCollageProps, StoryData } from '../types';
 import { StoryCard } from './StoryCard';
 import { MainStory } from './MainStory';
 import { LoadingCard } from './LoadingCard';
-import '../styles.css';
+import '../compiled.css';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
