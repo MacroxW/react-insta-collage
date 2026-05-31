@@ -79,7 +79,7 @@ export const VotingSticker = ({ question, options, totalVotes, selectedOptionId,
           );
         })}
       </div>
-      <p className="mt-2 text-center text-[11px] font-semibold text-neutral-500">{resolvedTotalVotes} votos</p>
+      <p className="mt-2 text-center text-[11px] font-semibold text-neutral-500">{resolvedTotalVotes} votes</p>
     </div>
   );
 };

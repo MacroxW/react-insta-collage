@@ -40,7 +40,7 @@ import {
 
 const userStories: UserStoryData[] = [
   {
-    username: 'camiquindi',
+    username: 'ava_stone',
     profileImage: 'https://example.com/avatar.jpg',
     slides: [
       {
@@ -53,7 +53,7 @@ const userStories: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Hola Instagram',
+            text: 'Hello Instagram',
             x: 0.5,
             y: 0.3,
             style: {
@@ -65,7 +65,7 @@ const userStories: UserStoryData[] = [
           },
           {
             type: 'mention',
-            username: 'usuario',
+            username: 'noah_brooks',
             x: 0.3,
             y: 0.7,
           },
@@ -77,8 +77,8 @@ const userStories: UserStoryData[] = [
           },
           {
             type: 'link',
-            url: 'https://serviweb.online',
-            label: 'Ver mas',
+            url: 'https://example.com',
+            label: 'Learn more',
             x: 0.5,
             y: 0.9,
           },
@@ -88,12 +88,12 @@ const userStories: UserStoryData[] = [
             x: 0.5,
             y: 0.78,
             props: {
-              question: 'Que hacemos manana?',
+              question: 'Pick an option',
               options: [
-                { id: 'beach', label: 'Playa', votes: 124 },
-                { id: 'city', label: 'Ciudad', votes: 48 },
+                { id: 'option-a', label: 'Option A', votes: 124 },
+                { id: 'option-b', label: 'Option B', votes: 48 },
               ],
-              selectedOptionId: 'beach',
+              selectedOptionId: 'option-a',
             },
           },
         ],

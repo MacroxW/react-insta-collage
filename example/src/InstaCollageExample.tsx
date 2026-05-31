@@ -25,11 +25,11 @@ const renderCustomStoryElement = (element: StoryElement) => {
 
 const API_STORIES_RESPONSE: UserStoryData[] = [
   {
-    username: 'sofia_martinez',
+    username: 'ava_stone',
     profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'sofia_martinez-beach-01',
+        id: 'ava-stone-beach-01',
         createdAt: createDate(540),
         background: {
           type: 'image',
@@ -45,14 +45,14 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
           },
           {
             type: 'location',
-            name: 'Mar del Plata',
+            name: 'Harbor Beach',
             x: 0.5,
             y: 0.4,
           },
           {
             type: 'poll',
-            question: '¿Team playa?',
-            options: ['Sí', 'Obvio'],
+            question: 'Beach day?',
+            options: ['Yes', 'Absolutely'],
             x: 0.5,
             y: 0.76,
           },
@@ -62,18 +62,18 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
             x: 0.5,
             y: 0.6,
             props: {
-              question: 'Plan de mañana',
+              question: 'Choose a plan',
               options: [
-                { id: 'beach', label: 'Playa', votes: 124 },
-                { id: 'city', label: 'Ciudad', votes: 48 },
+                { id: 'option-a', label: 'Option A', votes: 124 },
+                { id: 'option-b', label: 'Option B', votes: 48 },
               ],
-              selectedOptionId: 'beach',
+              selectedOptionId: 'option-a',
             },
           },
         ],
       },
       {
-        id: 'sofia_martinez-video-02',
+        id: 'ava-stone-video-02',
         createdAt: createDate(480),
         background: {
           type: 'video',
@@ -83,7 +83,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
           {
             type: 'music',
             track: 'Golden Hour',
-            artist: 'Demo Artist',
+            artist: 'Sample Artist',
             start_ms: 15000,
             x: 0.5,
             y: 0.16,
@@ -91,14 +91,14 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
           {
             type: 'emoji_slider',
             emoji: '🔥',
-            question: '¿Qué tanto mood?',
+            question: 'How good is this mood?',
             x: 0.5,
             y: 0.72,
           },
         ],
       },
       {
-        id: 'sofia_martinez-lagoon-03',
+        id: 'ava-stone-lagoon-03',
         createdAt: createDate(420),
         background: {
           type: 'image',
@@ -107,7 +107,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'mention',
-            username: 'martin_lopez',
+            username: 'noah_brooks',
             x: 0.32,
             y: 0.7,
           },
@@ -119,8 +119,8 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
           },
           {
             type: 'link',
-            url: 'https://serviweb.online',
-            label: 'Ver más',
+            url: 'https://example.com',
+            label: 'Learn more',
             x: 0.5,
             y: 0.86,
           },
@@ -129,11 +129,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'martin_lopez',
+    username: 'noah_brooks',
     profileImage: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'martin_lopez-mountains-01',
+        id: 'noah-brooks-mountains-01',
         createdAt: createDate(360),
         background: {
           type: 'image',
@@ -142,14 +142,14 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'La cima siempre vale el esfuerzo',
+            text: 'A clean demo story',
             x: 0.5,
             y: 0.28,
             style: { font: 'serif', size: 28, color: '#FFFFFF', align: 'center' },
           },
           {
             type: 'question_box',
-            question: '¿Dónde hacemos la próxima?',
+            question: 'Next example?',
             x: 0.5,
             y: 0.72,
           },
@@ -158,11 +158,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'carla_gomez',
+    username: 'mia_harper',
     profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'carla_gomez-birthday-01',
+        id: 'mia-harper-birthday-01',
         createdAt: createDate(330),
         background: {
           type: 'image',
@@ -171,14 +171,14 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Feliz Cumple Angie!',
+            text: 'Birthday weekend',
             x: 0.5,
             y: 0.26,
             style: { font: 'strong', size: 34, color: '#FFFFFF', align: 'center' },
           },
           {
             type: 'text',
-            text: '*Pidiendo los tres deseos*',
+            text: 'Sample overlay text',
             x: 0.5,
             y: 0.62,
             style: { font: 'regular', size: 19, color: '#FFFFFF', align: 'center' },
@@ -188,11 +188,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'pedro_ramirez',
+    username: 'liam_carter',
     profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'pedro_ramirez-forest-01',
+        id: 'liam-carter-forest-01',
         createdAt: createDate(45),
         background: {
           type: 'image',
@@ -201,7 +201,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'location',
-            name: 'Sendero Verde',
+            name: 'Pine Trail',
             x: 0.5,
             y: 0.22,
           },
@@ -216,11 +216,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'laura_torres',
+    username: 'emma_reed',
     profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'laura_torres-sunset-01',
+        id: 'emma-reed-sunset-01',
         createdAt: createDate(35),
         background: {
           type: 'image',
@@ -229,7 +229,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Atardecer mágico',
+            text: 'Golden sunset',
             x: 0.5,
             y: 0.32,
             style: { font: 'strong', size: 32, color: '#FFE082', align: 'center' },
@@ -239,11 +239,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'diego_castillo',
+    username: 'jack_walker',
     profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'diego_castillo-stars-01',
+        id: 'jack-walker-stars-01',
         createdAt: createDate(28),
         background: {
           type: 'image',
@@ -252,7 +252,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Kilómetros bajo las estrellas',
+            text: 'Night under the stars',
             x: 0.5,
             y: 0.74,
             style: { font: 'mono', size: 20, color: '#FFFFFF', align: 'center' },
@@ -262,11 +262,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'ana_perez',
+    username: 'olivia_lane',
     profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'ana_perez-coffee-01',
+        id: 'olivia-lane-coffee-01',
         createdAt: createDate(120),
         background: {
           type: 'image',
@@ -275,14 +275,14 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Mañana de café y lectura',
+            text: 'Coffee and pages',
             x: 0.5,
             y: 0.3,
             style: { font: 'regular', size: 30, color: '#FFFFFF', align: 'center' },
           },
           {
             type: 'question_box',
-            question: '¿Café con leche o solo?',
+            question: 'Pick a mood',
             x: 0.5,
             y: 0.72,
           },
@@ -291,11 +291,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'jose_mendoza',
+    username: 'ethan_gray',
     profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'jose_mendoza-city-01',
+        id: 'ethan-gray-city-01',
         createdAt: createDate(60),
         background: {
           type: 'image',
@@ -304,14 +304,14 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Vistas de la ciudad',
+            text: 'City view',
             x: 0.5,
             y: 0.2,
             style: { font: 'strong', size: 36, color: '#FFFFFF', align: 'center' },
           },
           {
             type: 'location',
-            name: 'Buenos Aires',
+            name: 'Metro Center',
             x: 0.5,
             y: 0.35,
           },
@@ -326,11 +326,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'lucia_fernandez',
+    username: 'sophia_blake',
     profileImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'lucia_fernandez-food-01',
+        id: 'sophia-blake-food-01',
         createdAt: createDate(15),
         background: {
           type: 'image',
@@ -339,15 +339,15 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Delicia absoluta',
+            text: 'Dinner plans',
             x: 0.5,
             y: 0.2,
             style: { font: 'serif', size: 32, color: '#FFD700', align: 'center' },
           },
           {
             type: 'poll',
-            question: '¿Comida salada o dulce?',
-            options: ['Salado', 'Dulce'],
+            question: 'Pick one',
+            options: ['Option A', 'Option B'],
             x: 0.5,
             y: 0.7,
           },
@@ -356,11 +356,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'felipe_ortiz',
+    username: 'mason_cole',
     profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'felipe_ortiz-gym-01',
+        id: 'mason-cole-gym-01',
         createdAt: createDate(5),
         background: {
           type: 'image',
@@ -369,7 +369,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Entrenamiento completado 💪',
+            text: 'Activity complete',
             x: 0.5,
             y: 0.15,
             style: { font: 'strong', size: 34, color: '#FFFFFF', align: 'center' },
@@ -377,7 +377,7 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
           {
             type: 'emoji_slider',
             emoji: '🏋️',
-            question: '¿Qué tan intenso?',
+            question: 'How intense?',
             x: 0.5,
             y: 0.7,
           },
@@ -392,11 +392,11 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
     ],
   },
   {
-    username: 'valentina_rios',
+    username: 'chloe_west',
     profileImage: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=150&q=80',
     slides: [
       {
-        id: 'valentina_rios-art-01',
+        id: 'chloe-west-art-01',
         createdAt: createDate(2),
         background: {
           type: 'image',
@@ -405,21 +405,21 @@ const API_STORIES_RESPONSE: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Nuevo mural en la ciudad',
+            text: 'New gallery wall',
             x: 0.5,
             y: 0.2,
             style: { font: 'regular', size: 28, color: '#FFFFFF', align: 'center' },
           },
           {
             type: 'location',
-            name: 'La Boca',
+            name: 'Arts District',
             x: 0.5,
             y: 0.35,
           },
           {
             type: 'link',
-            url: 'https://serviweb.online',
-            label: 'Ver obra completa',
+            url: 'https://example.com',
+            label: 'View details',
             x: 0.5,
             y: 0.78,
           },
@@ -460,7 +460,7 @@ const InstaCollageExample = forwardRef<HTMLElement>((_, ref) => {
         setApiStories(response.stories);
       } catch {
         if (isMounted) {
-          setStoriesError('No pudimos cargar las historias.');
+          setStoriesError('Stories could not be loaded.');
         }
       } finally {
         if (isMounted) {
@@ -486,9 +486,9 @@ const InstaCollageExample = forwardRef<HTMLElement>((_, ref) => {
         <div className="max-w-5xl mx-auto px-6 pt-16 pb-6">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-extrabold tracking-tight mb-3">
-              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Demo Interactiva</span>
+              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Interactive Demo</span>
             </h2>
-            <p className="text-neutral-400 text-sm max-w-lg mx-auto">Hacé click en una historia para abrir el visor. Hay {apiStories.length} usuarios con datos simulados de API.</p>
+            <p className="text-neutral-400 text-sm max-w-lg mx-auto">Click a story to open the viewer. This demo uses {apiStories.length} fictional users from a simulated API response.</p>
           </div>
         </div>
 
@@ -534,7 +534,7 @@ const InstaCollageExample = forwardRef<HTMLElement>((_, ref) => {
           <button
             onClick={stories.close}
             className="absolute top-6 right-6 text-white/70 hover:text-white cursor-pointer z-30 transition-transform hover:scale-105 active:scale-95 bg-neutral-900/40 p-2 rounded-full border border-white/5"
-            title="Cerrar"
+            title="Close"
           >
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>

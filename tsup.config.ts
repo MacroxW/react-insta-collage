@@ -9,5 +9,5 @@ export default defineConfig({
   clean: true,
   minify: true,
   external: ['react', 'react-dom'],
-  injectStyle: true, // This will inject CSS into the JS bundle
+  injectStyle: false, // Output separate CSS file
 });

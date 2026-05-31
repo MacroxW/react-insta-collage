@@ -2,11 +2,6 @@
   "name": "react-insta-collage",
   "version": "1.0.7",
   "description": "A React library to create Instagram Story style collages.",
-  "homepage": "https://macroxw.github.io/react-insta-collage/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/MacroxW/react-insta-collage.git"
-  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -28,7 +23,6 @@
     "stories",
     "ui"
   ],
-  "author": "Marcos Elian Wendy",
   "license": "MIT",
   "peerDependencies": {
     "react": ">=16",

@@ -9,7 +9,7 @@ const BASIC_USAGE = `import { InstaCollage, useInstaCollageStories, type UserSto
 
 const userStories: UserStoryData[] = [
   {
-    username: 'camiquindi',
+    username: 'ava_stone',
     profileImage: 'https://example.com/avatar.jpg',
     slides: [
       {
@@ -22,12 +22,12 @@ const userStories: UserStoryData[] = [
         elements: [
           {
             type: 'text',
-            text: 'Hola Instagram',
+            text: 'Hello Instagram',
             x: 0.5,
             y: 0.3,
             style: { font: 'strong', size: 42, color: '#FFFFFF', align: 'center' },
           },
-          { type: 'mention', username: 'usuario', x: 0.3, y: 0.7 },
+          { type: 'mention', username: 'noah_brooks', x: 0.3, y: 0.7 },
           { type: 'hashtag', tag: '#travel', x: 0.7, y: 0.7 },
           {
             type: 'custom',
@@ -35,12 +35,12 @@ const userStories: UserStoryData[] = [
             x: 0.5,
             y: 0.82,
             props: {
-              question: '¿Qué hacemos mañana?',
+              question: 'Pick an option',
               options: [
-                { id: 'beach', label: 'Playa', votes: 124 },
-                { id: 'city', label: 'Ciudad', votes: 48 },
+                { id: 'option-a', label: 'Option A', votes: 124 },
+                { id: 'option-b', label: 'Option B', votes: 48 },
               ],
-              selectedOptionId: 'beach',
+              selectedOptionId: 'option-a',
             },
           },
         ],
@@ -79,15 +79,15 @@ interface StorySlideData {
 }`;
 
 const PROPS_TABLE = [
-  { prop: 'left', type: 'StoryData[]', desc: 'Historias que aparecen a la izquierda del centro.' },
-  { prop: 'center', type: 'MainStoryData', desc: 'La slide activa con background, elementos, progreso y metadata.' },
-  { prop: 'right', type: 'StoryData[]', desc: 'Historias que aparecen a la derecha del centro.' },
-  { prop: 'renderElement', type: '(element) => ReactNode', desc: 'Render opcional para elementos custom como voting.' },
-  { prop: 'onPrev', type: '() => void', desc: 'Controla el retroceso o esconde la flecha si no existe.' },
-  { prop: 'onNext', type: '() => void', desc: 'Controla avance manual y avance automatico.' },
-  { prop: 'onSelectLeft', type: '(index) => void', desc: 'Permite saltar a una historia lateral izquierda.' },
-  { prop: 'onSelectRight', type: '(index) => void', desc: 'Permite saltar a una historia lateral derecha.' },
-  { prop: 'className', type: 'string', desc: 'Clase opcional para adaptar el contenedor.' },
+  { prop: 'left', type: 'StoryData[]', desc: 'Stories shown to the left of the center card.' },
+  { prop: 'center', type: 'MainStoryData', desc: 'The active slide with background, elements, progress, and metadata.' },
+  { prop: 'right', type: 'StoryData[]', desc: 'Stories shown to the right of the center card.' },
+  { prop: 'renderElement', type: '(element) => ReactNode', desc: 'Optional renderer for custom elements like voting.' },
+  { prop: 'onPrev', type: '() => void', desc: 'Controls previous navigation or hides the arrow when omitted.' },
+  { prop: 'onNext', type: '() => void', desc: 'Controls manual and automatic forward navigation.' },
+  { prop: 'onSelectLeft', type: '(index) => void', desc: 'Lets users jump to a visible left-side story.' },
+  { prop: 'onSelectRight', type: '(index) => void', desc: 'Lets users jump to a visible right-side story.' },
+  { prop: 'className', type: 'string', desc: 'Optional class name for adapting the container.' },
 ];
 
 const CodeBlock: React.FC<{ code: string; language?: string }> = ({ code, language = 'tsx' }) => {
@@ -144,7 +144,7 @@ function App() {
 
           <div className="flex items-center gap-1">
             <a
-              href="https://github.com"
+              href="https://example.com"
               target="_blank"
               rel="noopener noreferrer"
               className="ml-2 text-neutral-400 hover:text-white transition-colors p-2"
@@ -187,8 +187,8 @@ function App() {
                   </h1>
 
                   <p className="hero-copy text-base sm:text-lg text-neutral-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-                    Componente de collage de historias estilo Instagram con transiciones fluidas,
-                    navegacion por teclado y View Transitions API.
+                    A React story collage component with smooth transitions,
+                    keyboard navigation, and View Transitions API support.
                   </p>
 
                   <div className="hero-actions flex flex-col sm:flex-row gap-3 justify-center">
@@ -197,7 +197,7 @@ function App() {
                       className="bg-white text-neutral-950 hover:bg-neutral-100 font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-white/10 cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2"
                     >
                       <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                      Ver Demo en Vivo
+                      View Live Demo
                     </button>
                     <div className="flex items-center justify-center bg-black/45 border border-white/12 rounded-xl px-5 py-3 font-mono text-sm text-neutral-200 gap-3 backdrop-blur-xl">
                       <span className="text-pink-300">$</span>
@@ -205,7 +205,7 @@ function App() {
                       <button
                         onClick={() => navigator.clipboard.writeText(INSTALL_CODE)}
                         className="text-neutral-400 hover:text-white transition-colors cursor-pointer ml-1"
-                        title="Copiar comando"
+                        title="Copy command"
                       >
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                       </button>
@@ -220,19 +220,19 @@ function App() {
         <section className="below-section reveal">
           <div className="below-section-header">
             <div>
-              <p>Pensado para stories reales</p>
-              <h2>Todo lo dificil ya viene resuelto</h2>
+              <p>Built for real stories</p>
+              <h2>The hard parts are already handled</h2>
             </div>
             <p>
-              Un visor elegante, responsive y controlable desde tu estado de React, listo para imagenes, videos y transiciones fluidas.
+              An elegant, responsive viewer controlled from your React state, ready for images, videos, and smooth transitions.
             </p>
           </div>
           <div className="feature-panel-grid">
             {[
-              { icon: '01', title: 'Movimiento nativo', desc: 'Usa View Transitions para que el cambio entre historias se sienta continuo y moderno.' },
-              { icon: '02', title: 'Video e imagen', desc: 'Detecta media mixto y mantiene la experiencia consistente entre formatos.' },
-              { icon: '03', title: 'Control total', desc: 'Vos decidis como avanzar, retroceder, saltar usuarios o cerrar el visor.' },
-              { icon: '04', title: 'Responsive', desc: 'Collage amplio en desktop y visor concentrado en pantallas chicas.' },
+              { icon: '01', title: 'Native motion', desc: 'Uses View Transitions so story changes feel continuous and modern.' },
+              { icon: '02', title: 'Video and images', desc: 'Handles mixed media while keeping the experience consistent across formats.' },
+              { icon: '03', title: 'Full control', desc: 'You decide how to move forward, go back, jump between users, or close the viewer.' },
+              { icon: '04', title: 'Responsive', desc: 'A wide collage on desktop and a focused viewer on smaller screens.' },
             ].map((feature) => (
               <div key={feature.icon} className="feature-panel reveal-item">
                 <span>{feature.icon}</span>
@@ -247,10 +247,10 @@ function App() {
           <div className="below-section-header reveal">
             <div>
               <p>Developer experience</p>
-              <h2>Instala, conecta y controla.</h2>
+              <h2>Install, connect, and control.</h2>
             </div>
             <p>
-              La API trabaja con slides reales: background, fecha de creacion y elementos posicionables como texto, menciones, links, encuestas y musica.
+              The API works with real slides: background media, creation dates, and positionable elements like text, mentions, links, polls, and music.
             </p>
           </div>
 
@@ -258,9 +258,9 @@ function App() {
             <div className="doc-panel reveal">
               <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">1</span>
-                Instalacion
+                Installation
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Instala el paquete y sumalo a tu app en segundos.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Install the package and add it to your app in seconds.</p>
               <div className="ml-11">
                 <CodeBlock code={INSTALL_CODE} language="bash" />
               </div>
@@ -269,9 +269,9 @@ function App() {
             <div className="doc-panel reveal">
               <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold">2</span>
-                Uso basico
+                Basic usage
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Trae tus stories desde una API, conectalas al hook y pasa las props al collage.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Fetch stories from an API, connect them to the hook, and pass the props to the collage.</p>
               <div className="ml-11">
                 <CodeBlock code={BASIC_USAGE} />
               </div>
@@ -280,9 +280,9 @@ function App() {
             <div className="doc-panel doc-panel-wide reveal">
               <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center text-fuchsia-300 text-sm font-bold">3</span>
-                Modelo de datos
+                Data model
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Cada slide representa una composicion completa con media de fondo y elementos renderizados encima.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">Each slide represents a full composition with background media and rendered overlay elements.</p>
               <div className="ml-11">
                 <CodeBlock code={STORY_DATA_EXAMPLE} />
               </div>
@@ -291,9 +291,9 @@ function App() {
             <div className="doc-panel doc-panel-wide reveal">
               <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm font-bold">4</span>
-                API esencial
+                Essential API
               </h2>
-              <p className="text-neutral-400 text-sm mb-4 ml-11">Las props clave de <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code>, organizadas para leer rapido.</p>
+              <p className="text-neutral-400 text-sm mb-4 ml-11">The key <code className="text-pink-400 bg-pink-500/10 px-1.5 py-0.5 rounded text-xs font-mono">{`<InstaCollage />`}</code> props, organized for quick scanning.</p>
               <div className="api-card-grid">
                 {PROPS_TABLE.map((row) => (
                   <div key={row.prop} className="api-card">
